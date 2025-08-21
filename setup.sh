@@ -20,7 +20,38 @@ fi
 NODE_VERSION=$(node -v | cut -d'v' -f2)
 REQUIRED_VERSION="18.0.0"
 
-if ! node -p "process.exit(require('semver').gte('$NODE_VERSION', '$REQUIRED_VERSION'))" 2>/dev/null; then
+# Simple version comparison function
+version_compare() {
+    local current="$1"
+    local required="$2"
+    
+    # Split versions into arrays
+    IFS='.' read -ra CURRENT_PARTS <<< "$current"
+    IFS='.' read -ra REQUIRED_PARTS <<< "$required"
+    
+    # Compare major version
+    if [ "${CURRENT_PARTS[0]}" -gt "${REQUIRED_PARTS[0]}" ]; then
+        return 0
+    elif [ "${CURRENT_PARTS[0]}" -lt "${REQUIRED_PARTS[0]}" ]; then
+        return 1
+    fi
+    
+    # Compare minor version
+    if [ "${CURRENT_PARTS[1]}" -gt "${REQUIRED_PARTS[1]}" ]; then
+        return 0
+    elif [ "${CURRENT_PARTS[1]}" -lt "${REQUIRED_PARTS[1]}" ]; then
+        return 1
+    fi
+    
+    # Compare patch version
+    if [ "${CURRENT_PARTS[2]}" -ge "${REQUIRED_PARTS[2]}" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+if ! version_compare "$NODE_VERSION" "$REQUIRED_VERSION"; then
     echo -e "${RED}❌ Node.js version $NODE_VERSION found. Requires version $REQUIRED_VERSION or higher.${NC}"
     exit 1
 fi
@@ -29,7 +60,7 @@ echo -e "${GREEN}✅ Node.js version $NODE_VERSION is compatible${NC}"
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm install
+pnpm install
 
 # Create .env file if it doesn't exist
 if [ ! -f .env ]; then

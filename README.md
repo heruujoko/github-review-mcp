@@ -147,6 +147,238 @@ list_models({ provider: "cursor" })
 list_models({ provider: "gemini" })
 ```
 
+## How to Configure MCP Client
+
+This section provides detailed instructions for setting up the MCP PR Review Server with various MCP clients.
+
+### Cursor IDE
+
+Cursor has built-in MCP support. Here's how to configure it:
+
+#### Method 1: Using Cursor's MCP Settings
+
+1. **Open Cursor Settings**
+   - Press `Cmd/Ctrl + ,` to open settings
+   - Navigate to "Extensions" → "MCP"
+
+2. **Add Server Configuration**
+   - Click "Add Server"
+   - Fill in the details:
+     - **Name**: `PR Review`
+     - **Command**: `node`
+     - **Args**: `["/absolute/path/to/github-review-mcp/src/index.js"]`
+     - **Environment Variables**:
+       ```
+       GITHUB_TOKEN=your_github_token_here
+       OLLAMA_HOST=http://localhost:11434
+       DEFAULT_MODEL=llama3.1
+       ```
+
+3. **Save and Restart**
+   - Save the configuration
+   - Restart Cursor for changes to take effect
+
+#### Method 2: Manual Configuration File
+
+1. **Locate Cursor's MCP config file**:
+   - **macOS**: `~/Library/Application Support/Cursor/User/globalStorage/mcp-servers.json`
+   - **Windows**: `%APPDATA%\Cursor\User\globalStorage\mcp-servers.json`
+   - **Linux**: `~/.config/Cursor/User/globalStorage/mcp-servers.json`
+
+2. **Edit the configuration file**:
+   ```json
+   {
+     "mcpServers": {
+       "pr-review": {
+         "command": "node",
+         "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
+         "env": {
+           "GITHUB_TOKEN": "your_github_token_here",
+           "OLLAMA_HOST": "http://localhost:11434",
+           "DEFAULT_MODEL": "llama3.1",
+           "PROMPT_FILE_PATH": "/absolute/path/to/github-review-mcp/prompts/review-prompt.md"
+         }
+       }
+     }
+   }
+   ```
+
+3. **Restart Cursor**
+
+#### Using the PR Review Tools in Cursor
+
+Once configured, you can use the tools in Cursor's chat:
+
+```
+Review this PR: https://github.com/owner/repo/pull/123
+
+Or use the tool directly:
+@pr-review review_pr pr_url="https://github.com/owner/repo/pull/123" model="llama3.1" provider="ollama"
+```
+
+### Claude Desktop
+
+Claude Desktop is one of the most popular MCP clients.
+
+#### Configuration Steps
+
+1. **Locate Claude Desktop config file**:
+   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+2. **Edit the configuration file**:
+   ```json
+   {
+     "mcpServers": {
+       "pr-review": {
+         "command": "node",
+         "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
+         "env": {
+           "GITHUB_TOKEN": "your_github_token_here",
+           "OLLAMA_HOST": "http://localhost:11434",
+           "DEFAULT_MODEL": "llama3.1"
+         }
+       }
+     }
+   }
+   ```
+
+3. **Restart Claude Desktop**
+
+4. **Verify Connection**:
+   - Look for the 🔧 icon in Claude Desktop
+   - You should see "pr-review" listed as an available server
+
+### VS Code (with MCP Extension)
+
+If you're using VS Code with an MCP extension:
+
+1. **Install MCP Extension**
+   - Search for "MCP" in VS Code extensions
+   - Install a compatible MCP client extension
+
+2. **Configure in settings.json**:
+   ```json
+   {
+     "mcp.servers": {
+       "pr-review": {
+         "command": "node",
+         "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
+         "env": {
+           "GITHUB_TOKEN": "your_github_token_here",
+           "DEFAULT_MODEL": "llama3.1"
+         }
+       }
+     }
+   }
+   ```
+
+### Custom MCP Client
+
+For other MCP clients or custom implementations:
+
+#### Basic Configuration Template
+
+```json
+{
+  "servers": {
+    "pr-review": {
+      "command": "node",
+      "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
+      "env": {
+        "GITHUB_TOKEN": "your_github_token_here",
+        "OLLAMA_HOST": "http://localhost:11434",
+        "DEFAULT_MODEL": "llama3.1",
+        "PROMPT_FILE_PATH": "/absolute/path/to/prompts/review-prompt.md",
+        "AUTO_POST_REVIEW": "false",
+        "MAX_PATCH_SIZE": "2000",
+        "MAX_FILES_TO_REVIEW": "50"
+      }
+    }
+  }
+}
+```
+
+### Important Configuration Notes
+
+#### 1. **Use Absolute Paths**
+Always use absolute paths in your configuration to avoid path resolution issues:
+```bash
+# Find your absolute path
+pwd
+# Example output: /Users/username/projects/github-review-mcp
+```
+
+#### 2. **Environment Variables Priority**
+Environment variables are loaded in this order:
+1. Client configuration `env` object
+2. System environment variables
+3. `.env` file in the project directory
+
+#### 3. **Required vs Optional Variables**
+- **Required**: `GITHUB_TOKEN`
+- **Optional**: All others have sensible defaults
+
+#### 4. **Multiple Configurations**
+You can run multiple instances with different configurations:
+```json
+{
+  "mcpServers": {
+    "pr-review-ollama": {
+      "command": "node",
+      "args": ["/path/to/github-review-mcp/src/index.js"],
+      "env": {
+        "GITHUB_TOKEN": "token",
+        "DEFAULT_MODEL": "llama3.1",
+        "OLLAMA_HOST": "http://localhost:11434"
+      }
+    },
+    "pr-review-gemini": {
+      "command": "node",
+      "args": ["/path/to/github-review-mcp/src/index.js"],
+      "env": {
+        "GITHUB_TOKEN": "token",
+        "DEFAULT_MODEL": "gemini-pro",
+        "GEMINI_API_KEY": "your_gemini_key"
+      }
+    }
+  }
+}
+```
+
+### Troubleshooting MCP Configuration
+
+#### Common Configuration Issues
+
+1. **Server not appearing in client**
+   - Check that the path to `index.js` is correct and absolute
+   - Verify Node.js is in your PATH
+   - Check client logs for error messages
+
+2. **"GitHub token is required" error**
+   - Ensure `GITHUB_TOKEN` is set in the `env` object
+   - Verify the token has correct permissions
+
+3. **Permission denied errors**
+   - Make sure the MCP client has permission to execute Node.js
+   - Check file permissions on the script
+
+4. **Environment variable not loading**
+   - Use absolute paths for file references
+   - Check that environment variables are properly quoted in JSON
+
+#### Debug Mode
+
+Enable debug logging by adding to your environment:
+```json
+{
+  "env": {
+    "DEBUG": "mcp:*",
+    "NODE_ENV": "development"
+  }
+}
+```
+
 ## Configuration
 
 ### Environment Variables
