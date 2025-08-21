@@ -10,6 +10,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { GitHubService } from './services/github.js';
 import { ConfigService } from './services/config.js';
+import { AnalysisService } from './services/analysis.js';
 import dotenv from 'dotenv';
 
 // Load environment variables
@@ -31,6 +32,7 @@ class GitHubMCPServer {
 
     this.config = new ConfigService();
     this.github = new GitHubService(this.config.get('GITHUB_TOKEN'));
+    this.analysis = new AnalysisService();
 
     this.setupToolHandlers();
   }
@@ -174,8 +176,132 @@ class GitHubMCPServer {
             description: '🔥 CALL THIS FIRST! Get comprehensive review guidelines and prompts to perform thorough PR analysis. Essential for high-quality code reviews.',
             inputSchema: {
               type: 'object',
-              properties: {},
-              required: [],
+              properties: {
+                random_string: {
+                  type: 'string',
+                  description: 'Dummy parameter for no-parameter tools',
+                },
+              },
+              required: ['random_string'],
+            },
+          },
+          {
+            name: 'analyze_code_quality',
+            description: 'Analyze code quality metrics for changed files including complexity, maintainability, and potential issues.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                pr_url: {
+                  type: 'string',
+                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                },
+                file_paths: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Optional: Specific file paths to analyze. If not provided, analyzes all changed files.',
+                },
+              },
+              required: ['pr_url'],
+            },
+          },
+          {
+            name: 'analyze_diff_impact',
+            description: 'Analyze the impact and risk level of code changes in a diff, categorizing changes by type and potential consequences.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                pr_url: {
+                  type: 'string',
+                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                },
+              },
+              required: ['pr_url'],
+            },
+          },
+          {
+            name: 'detect_security_issues',
+            description: 'Scan code changes for potential security vulnerabilities and patterns.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                pr_url: {
+                  type: 'string',
+                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                },
+              },
+              required: ['pr_url'],
+            },
+          },
+          {
+            name: 'detect_code_patterns',
+            description: 'Detect anti-patterns, best practices violations, and architectural issues in code changes.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                pr_url: {
+                  type: 'string',
+                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                },
+                language: {
+                  type: 'string',
+                  description: 'Programming language to focus pattern detection on (auto-detected if not provided)',
+                },
+              },
+              required: ['pr_url'],
+            },
+          },
+          {
+            name: 'analyze_dependencies',
+            description: 'Analyze dependency changes and their impact, including new packages, version updates, and security implications.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                pr_url: {
+                  type: 'string',
+                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                },
+              },
+              required: ['pr_url'],
+            },
+          },
+          {
+            name: 'analyze_test_coverage',
+            description: 'Analyze test coverage for changed code and suggest testing improvements.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                pr_url: {
+                  type: 'string',
+                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                },
+              },
+              required: ['pr_url'],
+            },
+          },
+          {
+            name: 'generate_suggestions',
+            description: 'Generate specific code improvement suggestions based on best practices and patterns.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                pr_url: {
+                  type: 'string',
+                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                },
+                file_path: {
+                  type: 'string',
+                  description: 'Specific file to generate suggestions for',
+                },
+                focus_areas: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    enum: ['performance', 'security', 'maintainability', 'readability', 'testing']
+                  },
+                  description: 'Specific areas to focus suggestions on',
+                },
+              },
+              required: ['pr_url', 'file_path'],
             },
           },
         ],
@@ -207,6 +333,27 @@ class GitHubMCPServer {
           
           case 'get_review_prompts':
             return await this.handleGetReviewPrompts(args);
+          
+          case 'analyze_code_quality':
+            return await this.handleAnalyzeCodeQuality(args);
+          
+          case 'analyze_diff_impact':
+            return await this.handleAnalyzeDiffImpact(args);
+          
+          case 'detect_security_issues':
+            return await this.handleDetectSecurityIssues(args);
+          
+          case 'detect_code_patterns':
+            return await this.handleDetectCodePatterns(args);
+          
+          case 'analyze_dependencies':
+            return await this.handleAnalyzeDependencies(args);
+          
+          case 'analyze_test_coverage':
+            return await this.handleAnalyzeTestCoverage(args);
+          
+          case 'generate_suggestions':
+            return await this.handleGenerateSuggestions(args);
           
           default:
             throw new McpError(
@@ -514,6 +661,176 @@ These guidelines will help you perform thorough, professional code reviews.
         {
           type: 'text',
           text: header + content,
+        },
+      ],
+    };
+  }
+
+  async handleAnalyzeCodeQuality(args) {
+    const { pr_url, file_paths = null } = args;
+    
+    if (!pr_url) {
+      throw new Error('PR URL is required');
+    }
+
+    const prDetails = await this.github.getPRDetails(pr_url);
+    const analysis = await this.analysis.analyzeCodeQuality(prDetails, file_paths);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            analysis_type: 'code_quality',
+            pr_url,
+            ...analysis
+          }, null, 2),
+        },
+      ],
+    };
+  }
+
+  async handleAnalyzeDiffImpact(args) {
+    const { pr_url } = args;
+    
+    if (!pr_url) {
+      throw new Error('PR URL is required');
+    }
+
+    const prDetails = await this.github.getPRDetails(pr_url);
+    const analysis = await this.analysis.analyzeDiffImpact(prDetails);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            analysis_type: 'diff_impact',
+            pr_url,
+            ...analysis
+          }, null, 2),
+        },
+      ],
+    };
+  }
+
+  async handleDetectSecurityIssues(args) {
+    const { pr_url } = args;
+    
+    if (!pr_url) {
+      throw new Error('PR URL is required');
+    }
+
+    const prDetails = await this.github.getPRDetails(pr_url);
+    const analysis = await this.analysis.detectSecurityIssues(prDetails);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            analysis_type: 'security_analysis',
+            pr_url,
+            ...analysis
+          }, null, 2),
+        },
+      ],
+    };
+  }
+
+  async handleDetectCodePatterns(args) {
+    const { pr_url, language = null } = args;
+    
+    if (!pr_url) {
+      throw new Error('PR URL is required');
+    }
+
+    const prDetails = await this.github.getPRDetails(pr_url);
+    const analysis = await this.analysis.detectCodePatterns(prDetails, language);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            analysis_type: 'pattern_detection',
+            pr_url,
+            ...analysis
+          }, null, 2),
+        },
+      ],
+    };
+  }
+
+  async handleAnalyzeDependencies(args) {
+    const { pr_url } = args;
+    
+    if (!pr_url) {
+      throw new Error('PR URL is required');
+    }
+
+    const prDetails = await this.github.getPRDetails(pr_url);
+    const analysis = await this.analysis.analyzeDependencies(prDetails);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            analysis_type: 'dependency_analysis',
+            pr_url,
+            ...analysis
+          }, null, 2),
+        },
+      ],
+    };
+  }
+
+  async handleAnalyzeTestCoverage(args) {
+    const { pr_url } = args;
+    
+    if (!pr_url) {
+      throw new Error('PR URL is required');
+    }
+
+    const prDetails = await this.github.getPRDetails(pr_url);
+    const analysis = await this.analysis.analyzeTestCoverage(prDetails);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            analysis_type: 'test_coverage',
+            pr_url,
+            ...analysis
+          }, null, 2),
+        },
+      ],
+    };
+  }
+
+  async handleGenerateSuggestions(args) {
+    const { pr_url, file_path, focus_areas = [] } = args;
+    
+    if (!pr_url || !file_path) {
+      throw new Error('PR URL and file path are required');
+    }
+
+    const prDetails = await this.github.getPRDetails(pr_url);
+    const suggestions = await this.analysis.generateSuggestions(prDetails, file_path, focus_areas);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            analysis_type: 'code_suggestions',
+            pr_url,
+            file_path,
+            focus_areas,
+            ...suggestions
+          }, null, 2),
         },
       ],
     };

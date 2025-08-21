@@ -4,11 +4,12 @@
     "description": "MCP server for GitHub API interactions - PR analysis, file content, and review posting",
     "main": "src/index.js",
     "type": "module",
-    "scripts": {
-      "start": "node src/index.js",
-      "dev": "node --watch src/index.js",
-      "test": "node --test test/*.js"
-    },
+      "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test test/*.js",
+    "demo": "node examples/advanced-analysis-demo.js"
+  },
     "dependencies": {
       "@modelcontextprotocol/sdk": "^0.4.0",
       "@octokit/rest": "^20.0.2",

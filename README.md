@@ -4,6 +4,7 @@ An MCP (Model Context Protocol) server that provides GitHub API tools for Pull R
 
 ## Features
 
+### Core Features
 - ⭐ **Smart Review Prompts**: Comprehensive guidelines for thorough PR analysis (call `get_review_prompts` first!)
 - 🔍 **Pull Request Analysis**: Get detailed PR information, file changes, and commit history
 - 📝 **File Content Retrieval**: Fetch content from any file in a GitHub repository
@@ -11,6 +12,15 @@ An MCP (Model Context Protocol) server that provides GitHub API tools for Pull R
 - 🔧 **Repository Information**: Get repository languages, README, and metadata
 - 🚀 **MCP Integration**: Seamlessly integrates with any MCP-compatible client
 - 🔒 **Secure**: Uses GitHub Personal Access Tokens for authentication
+
+### 🚀 Advanced Analysis Features
+- 📊 **Code Quality Analysis**: Complexity metrics, maintainability index, technical debt assessment
+- 🛡️ **Security Vulnerability Detection**: SQL injection, XSS, hardcoded secrets, and more
+- ⚡ **Diff Impact Assessment**: Risk level analysis and breaking change detection
+- 🏗️ **Code Pattern Detection**: Anti-patterns, design issues, and best practice validation
+- 📦 **Dependency Analysis**: Security and compatibility assessment for package changes
+- 🧪 **Test Coverage Analysis**: Coverage estimation and missing test identification
+- 💡 **Smart Suggestions**: Actionable code improvements with implementation examples
 
 ## Prerequisites
 
@@ -23,8 +33,8 @@ An MCP (Model Context Protocol) server that provides GitHub API tools for Pull R
 
 ```bash
 git clone <repository-url>
-cd mcp-github-server
-npm install
+cd github-review-mcp
+pnpm install
 ```
 
 ### 2. Set up Environment Variables
@@ -32,19 +42,15 @@ npm install
 Create a `.env` file:
 
 ```bash
-cp .env.example .env
+echo "GITHUB_TOKEN=ghp_your_github_token_here" > .env
 ```
 
-Edit `.env` with your GitHub token:
-
-```bash
-GITHUB_TOKEN=ghp_your_github_token_here
-```
+Replace `ghp_your_github_token_here` with your actual GitHub Personal Access Token.
 
 ### 3. Start the Server
 
 ```bash
-npm start
+pnpm start
 ```
 
 ## Required Credentials
@@ -66,9 +72,9 @@ Add to your MCP client configuration (e.g., Cursor IDE, Claude Desktop):
 ```json
 {
   "mcpServers": {
-    "github": {
+    "github-review-server": {
       "command": "node",
-      "args": ["/path/to/mcp-github-server/src/index.js"],
+      "args": ["/path/to/github-review-mcp/src/index.js"],
       "env": {
         "GITHUB_TOKEN": "your_token_here"
       }
@@ -89,6 +95,8 @@ Add to your MCP client configuration (e.g., Cursor IDE, Claude Desktop):
 | `ENABLE_DEBUG` | Enable debug logging | `false` | ❌ |
 
 ## Available Tools
+
+### Core PR Analysis Tools
 
 ### 1. Get PR Details
 
@@ -192,42 +200,220 @@ get_review_prompts()
 - Includes security and performance considerations
 - Offers communication best practices for review feedback
 
+### Advanced Analysis Tools 🚀
+
+### 8. Analyze Code Quality
+
+Analyze code quality metrics including complexity, maintainability, and technical debt:
+
+```javascript
+analyze_code_quality({
+  pr_url: "https://github.com/owner/repo/pull/123",
+  file_paths: ["src/component.js", "src/utils.js"] // Optional: specific files
+})
+```
+
+**Returns**: Detailed quality metrics including:
+- Cyclomatic complexity scores
+- Maintainability index
+- Technical debt ratio
+- Code smells and issues
+- Quality improvement suggestions
+
+### 9. Analyze Diff Impact
+
+Analyze the impact and risk level of code changes:
+
+```javascript
+analyze_diff_impact({
+  pr_url: "https://github.com/owner/repo/pull/123"
+})
+```
+
+**Returns**: Risk assessment including:
+- Overall risk level (LOW/MEDIUM/HIGH)
+- Breaking change detection
+- API change analysis
+- Security-sensitive area identification
+- Impact recommendations
+
+### 10. Detect Security Issues
+
+Scan code changes for security vulnerabilities and patterns:
+
+```javascript
+detect_security_issues({
+  pr_url: "https://github.com/owner/repo/pull/123"
+})
+```
+
+**Returns**: Security analysis including:
+- Vulnerability detection (SQL injection, XSS, etc.)
+- Hardcoded secrets detection
+- Insecure patterns identification
+- Security score (0-100)
+- Compliance issues
+
+### 11. Detect Code Patterns
+
+Detect anti-patterns, best practices violations, and design issues:
+
+```javascript
+detect_code_patterns({
+  pr_url: "https://github.com/owner/repo/pull/123",
+  language: "javascript" // Optional: focus on specific language
+})
+```
+
+**Returns**: Pattern analysis including:
+- Anti-pattern detection (God objects, magic numbers, etc.)
+- Good pattern identification
+- Architectural issue detection
+- Design pattern usage analysis
+- Improvement recommendations
+
+### 12. Analyze Dependencies
+
+Analyze dependency changes and their security/compatibility impact:
+
+```javascript
+analyze_dependencies({
+  pr_url: "https://github.com/owner/repo/pull/123"
+})
+```
+
+**Returns**: Dependency analysis including:
+- New, removed, and updated dependencies
+- Security vulnerability assessment
+- Compatibility issue detection
+- Performance impact analysis
+- Upgrade recommendations
+
+### 13. Analyze Test Coverage
+
+Analyze test coverage for changed code and suggest testing improvements:
+
+```javascript
+analyze_test_coverage({
+  pr_url: "https://github.com/owner/repo/pull/123"
+})
+```
+
+**Returns**: Test analysis including:
+- Coverage estimation for changed code
+- Missing test identification
+- Test quality assessment (unit, integration, edge cases)
+- Testing recommendations
+
+### 14. Generate Code Suggestions
+
+Generate specific, actionable code improvement suggestions:
+
+```javascript
+generate_suggestions({
+  pr_url: "https://github.com/owner/repo/pull/123",
+  file_path: "src/component.js",
+  focus_areas: ["performance", "security", "maintainability"] // Optional focus
+})
+```
+
+**Returns**: Targeted suggestions including:
+- Area-specific improvements (performance, security, etc.)
+- Prioritized recommendation list
+- Implementation examples
+- Code snippets and best practices
+
 ## Usage Examples
 
-### Example 1: Comprehensive Pull Request Review (RECOMMENDED WORKFLOW)
+### Example 1: Comprehensive Pull Request Review (ENHANCED WORKFLOW) 🚀
 
 ```javascript
 // 🔥 STEP 1: Get review guidelines FIRST!
 const reviewGuide = await get_review_prompts();
 // This provides comprehensive guidelines for thorough analysis
 
-// STEP 2: Get PR details
+// STEP 2: Get PR details and context
 const prDetails = await get_pr_details({
   pr_url: "https://github.com/owner/repo/pull/123"
 });
 
-// STEP 3: Get the files changed
-const files = await get_pr_files({
-  pr_url: "https://github.com/owner/repo/pull/123",
-  include_patch: true
-});
-
-// STEP 4: Get repository context
 const repoInfo = await get_repo_info({
   owner: "owner",
   repo: "repo"
 });
 
-// STEP 5: Analyze using the review guidelines
-// Apply the comprehensive checklist from get_review_prompts()
-// - Code quality, security, performance
-// - Architecture, testing, documentation
-// - Best practices and standards
+// STEP 3: Get files and perform basic analysis
+const files = await get_pr_files({
+  pr_url: "https://github.com/owner/repo/pull/123",
+  include_patch: true
+});
 
-// STEP 6: Post comprehensive review
+// STEP 4: ENHANCED ANALYSIS - Use new analysis tools
+// Code Quality Analysis
+const qualityAnalysis = await analyze_code_quality({
+  pr_url: "https://github.com/owner/repo/pull/123"
+});
+
+// Security Analysis
+const securityAnalysis = await detect_security_issues({
+  pr_url: "https://github.com/owner/repo/pull/123"
+});
+
+// Impact Assessment
+const impactAnalysis = await analyze_diff_impact({
+  pr_url: "https://github.com/owner/repo/pull/123"
+});
+
+// Pattern Detection
+const patternAnalysis = await detect_code_patterns({
+  pr_url: "https://github.com/owner/repo/pull/123"
+});
+
+// Dependency Analysis
+const dependencyAnalysis = await analyze_dependencies({
+  pr_url: "https://github.com/owner/repo/pull/123"
+});
+
+// Test Coverage Analysis
+const testAnalysis = await analyze_test_coverage({
+  pr_url: "https://github.com/owner/repo/pull/123"
+});
+
+// STEP 5: Generate specific suggestions for key files
+const suggestions = await generate_suggestions({
+  pr_url: "https://github.com/owner/repo/pull/123",
+  file_path: "src/main-component.js",
+  focus_areas: ["security", "performance", "maintainability"]
+});
+
+// STEP 6: Compile comprehensive review with all analysis data
 await post_pr_review({
   pr_url: "https://github.com/owner/repo/pull/123",
-  body: "## Code Review\n\nFollowing comprehensive review guidelines...\n\n### Analysis Summary\n...",
+  body: `## 🔍 Comprehensive Code Review
+
+### 📊 Analysis Summary
+- **Quality Score**: ${qualityAnalysis.overall_score}/100
+- **Security Score**: ${securityAnalysis.security_score}/100  
+- **Risk Level**: ${impactAnalysis.overall_risk}
+
+### 🛡️ Security Analysis
+${securityAnalysis.vulnerabilities.length > 0 ? 
+  '⚠️ Security issues found - see detailed analysis' : 
+  '✅ No security vulnerabilities detected'}
+
+### 🏗️ Code Quality
+- High complexity files: ${qualityAnalysis.summary.high_complexity_files.length}
+- Technical debt ratio: ${qualityAnalysis.files.reduce((avg, f) => avg + f.metrics.technical_debt_ratio, 0) / qualityAnalysis.files.length}%
+
+### 🧪 Testing
+- Estimated coverage: ${testAnalysis.coverage_estimate}%
+- Missing tests: ${testAnalysis.missing_tests.length} files
+
+### 📋 Recommendations
+${suggestions.priority_suggestions.slice(0, 3).map(s => `- ${s.description}`).join('\n')}
+
+### 🎯 Next Steps
+Based on the comprehensive analysis above...`,
   event: "COMMENT"
 });
 ```
@@ -260,7 +446,7 @@ const fileContent = await get_file_content({
    - Add Server:
      - **Name**: `GitHub`
      - **Command**: `node`
-     - **Args**: `["/absolute/path/to/mcp-github-server/src/index.js"]`
+     - **Args**: `["/absolute/path/to/github-review-mcp/src/index.js"]`
      - **Environment Variables**: `GITHUB_TOKEN=your_token_here`
 
 2. **Manual Configuration File**:
@@ -271,9 +457,9 @@ const fileContent = await get_file_content({
 ```json
 {
   "mcpServers": {
-    "github": {
+    "github-review-server": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp-github-server/src/index.js"],
+      "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
       "env": {
         "GITHUB_TOKEN": "your_github_token_here"
       }
@@ -291,9 +477,9 @@ const fileContent = await get_file_content({
 ```json
 {
   "mcpServers": {
-    "github": {
+    "github-review-server": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp-github-server/src/index.js"],
+      "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
       "env": {
         "GITHUB_TOKEN": "your_github_token_here"
       }
@@ -307,9 +493,9 @@ const fileContent = await get_file_content({
 ```json
 {
   "mcp.servers": {
-    "github": {
+    "github-review-server": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp-github-server/src/index.js"],
+      "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
       "env": {
         "GITHUB_TOKEN": "your_github_token_here"
       }
@@ -376,64 +562,113 @@ graph TD
 │   ├── index.js              # Main MCP server
 │   └── services/
 │       ├── github.js         # GitHub API integration
-│       └── config.js         # Configuration management
-├── .env.example              # Environment template
-└── package.json
+│       ├── config.js         # Configuration management
+│       └── analysis.js       # Advanced code analysis
+├── examples/
+│   └── advanced-analysis-demo.js
+├── package.json
+└── pnpm-lock.yaml
 ```
 
 ### Running in Development
 
 ```bash
-npm run dev  # Runs with --watch flag
+pnpm run dev  # Runs with --watch flag
 ```
 
 ### Testing
 
 ```bash
-npm test
+pnpm test
 ```
 
 ## 🎯 Best Practices for External LLMs
 
-### Ensuring Comprehensive Reviews
+### Ensuring Comprehensive Reviews with Enhanced Analysis
 
-To ensure external LLMs call `get_review_prompts` first and perform thorough analysis:
+To ensure external LLMs leverage all available tools for thorough code review:
 
-#### 1. **System Prompt Guidelines**
+#### 1. **Enhanced System Prompt Guidelines**
 Include this in your LLM's system prompt:
 
 ```
 When reviewing pull requests:
 1. ALWAYS call get_review_prompts() as your FIRST action
 2. Study the comprehensive review guidelines before analyzing code
-3. Follow the structured approach provided in the guidelines
-4. Use the checklist to ensure no aspects are missed
+3. Use ALL available analysis tools for thorough assessment:
+   - analyze_code_quality() for complexity and maintainability
+   - detect_security_issues() for vulnerability scanning
+   - analyze_diff_impact() for risk assessment
+   - detect_code_patterns() for design analysis
+   - analyze_dependencies() for dependency security
+   - analyze_test_coverage() for testing adequacy
+   - generate_suggestions() for specific improvements
+4. Follow the structured approach and provide quantified metrics
+5. Use the analysis data to generate actionable recommendations
 ```
 
-#### 2. **Workflow Enforcement**
-- The `get_review_prompts` tool is marked with 🔥 and "CALL THIS FIRST!"
-- Other tools include reminder messages about using review prompts
-- Tool descriptions emphasize the importance of following guidelines
-
-#### 3. **Tool Ordering Strategy**
+#### 2. **Enhanced Workflow Strategy**
 ```javascript
-// RECOMMENDED: This order ensures comprehensive analysis
-1. get_review_prompts()     // Get guidelines first
-2. get_pr_details()         // Understand the PR
-3. get_repo_info()          // Get context
-4. get_pr_files()           // Analyze changes
-5. get_pr_commits()         // Review commit history
-6. post_pr_review()         // Post comprehensive review
+// COMPREHENSIVE WORKFLOW: Use all analysis tools
+1. get_review_prompts()        // Get guidelines first ⭐
+2. get_pr_details()           // Understand the PR
+3. get_repo_info()            // Get context
+4. get_pr_files()             // Get file changes
+
+// ENHANCED ANALYSIS PHASE
+5. analyze_code_quality()      // Quality metrics
+6. detect_security_issues()   // Security scan
+7. analyze_diff_impact()      // Risk assessment
+8. detect_code_patterns()     // Pattern analysis
+9. analyze_dependencies()     // Dependency check
+10. analyze_test_coverage()   // Testing analysis
+11. generate_suggestions()    // Specific improvements
+
+12. post_pr_review()          // Post comprehensive review
 ```
 
-#### 4. **Quality Indicators**
-A comprehensive review should include:
-- ✅ Security analysis (from prompts guidelines)
-- ✅ Performance considerations
-- ✅ Code quality assessment
-- ✅ Architecture evaluation
-- ✅ Testing adequacy check
-- ✅ Documentation review
+#### 3. **Analysis Depth Indicators**
+A comprehensive review should now include:
+- ✅ **Quantified Quality Score** (0-100 from code quality analysis)
+- ✅ **Security Score** (0-100 from security analysis)
+- ✅ **Risk Level Assessment** (LOW/MEDIUM/HIGH from impact analysis)
+- ✅ **Pattern Analysis** (anti-patterns and good practices identified)
+- ✅ **Dependency Security** (vulnerability and compatibility assessment)
+- ✅ **Test Coverage Estimate** (percentage and missing test identification)
+- ✅ **Prioritized Suggestions** (specific, actionable improvements)
+
+#### 4. **Tool Synergy Best Practices**
+- **Combine Results**: Use multiple tool outputs to create holistic assessments
+- **Cross-Reference**: Validate findings across different analysis types
+- **Prioritize Issues**: Use security and impact analysis to rank concerns
+- **Provide Metrics**: Include quantified scores for objective assessment
+- **Generate Examples**: Use suggestion tools for implementation guidance
+
+#### 5. **Advanced Analysis Patterns**
+
+**For High-Risk Changes:**
+```javascript
+// Focus on security and impact for sensitive changes
+const security = await detect_security_issues({pr_url});
+const impact = await analyze_diff_impact({pr_url});
+const patterns = await detect_code_patterns({pr_url});
+```
+
+**For New Features:**
+```javascript
+// Emphasize quality, testing, and patterns
+const quality = await analyze_code_quality({pr_url});
+const testing = await analyze_test_coverage({pr_url});
+const suggestions = await generate_suggestions({pr_url, file_path, focus_areas: ["maintainability", "testing"]});
+```
+
+**For Dependency Updates:**
+```javascript
+// Focus on dependency and security analysis
+const deps = await analyze_dependencies({pr_url});
+const security = await detect_security_issues({pr_url});
+const impact = await analyze_diff_impact({pr_url});
+```
 
 ## Troubleshooting
 
