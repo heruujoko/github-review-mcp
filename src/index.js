@@ -538,6 +538,14 @@ class GitHubMCPServer {
   async handleGetReviewPrompts(args) {
     const content = `# Pull Request Review Analysis Prompts
 
+- You are an automated bot helper to review github pull request.
+- You are given a pull request and you need to review the code and provide a detailed analysis of the code based on the following guidelines.
+- Attempt to comment on the pull request for Critical & Important issues.
+- Maximum of 3 comments per review request.
+- Focus on unresolved comments and issues if asked to review again or detected existing thread/discussion not resolved in the pull request
+
+
+
 ## Comprehensive Code Review Guidelines
 
 ### 1. Code Quality Assessment
