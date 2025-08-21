@@ -645,7 +645,15 @@ Watch out for these warning signs:
 - Poor variable or function naming
 - Commented-out code without explanation
 - Large files or functions that should be split
-- Tight coupling between unrelated components`;
+- Tight coupling between unrelated components
+
+### 11. Commenting on the pull request
+- check similar discussion have been made before posting a comment
+- prioritize comments that are actionable and helpful (cirtical issues, security issues, performance issues, etc.)
+- maximum 3 comment on each review request
+- on each your comment indicate this the review was made by AI agents
+
+`;
 
     const header = `# 🎯 PR Review Guidelines - START HERE!
 
