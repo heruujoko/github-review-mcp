@@ -1,0 +1,33 @@
+{
+    "name": "mcp-pr-review-server",
+    "version": "1.0.0",
+    "description": "MCP server for automated PR reviews using GitHub API and Ollama",
+    "main": "src/index.js",
+    "type": "module",
+    "scripts": {
+      "start": "node src/index.js",
+      "dev": "node --watch src/index.js",
+      "test": "node --test test/*.js"
+    },
+    "dependencies": {
+      "@modelcontextprotocol/sdk": "^0.4.0",
+      "@octokit/rest": "^20.0.2",
+      "ollama": "^0.5.0",
+      "dotenv": "^16.3.1",
+      "fs": "^0.0.1-security",
+      "path": "^0.12.7",
+      "url": "^0.11.3"
+    },
+    "devDependencies": {
+      "@types/node": "^20.0.0"
+    },
+    "keywords": [
+      "mcp",
+      "github",
+      "pr-review",
+      "ollama",
+      "code-review"
+    ],
+    "author": "Heru Joko Priyo Utomo",
+    "license": "MIT"
+  }
