@@ -1,22 +1,20 @@
-# MCP PR Review Server
+# GitHub MCP Server
 
-An MCP (Model Context Protocol) server for automated GitHub Pull Request reviews using local Ollama, Cursor CLI, or Gemini CLI as AI providers.
+An MCP (Model Context Protocol) server that provides GitHub API tools for Pull Request analysis, file content retrieval, and review posting. This server acts as a bridge between MCP clients (like Cursor IDE, Claude Desktop) and GitHub, allowing AI assistants to interact with GitHub repositories and Pull Requests.
 
 ## Features
 
-- 🔍 Automated PR analysis using GitHub API
-- 🤖 Multiple AI providers (Ollama, Cursor, Gemini)
-- 📝 Customizable review prompts
-- 🔧 Configurable via environment variables
-- 📊 Comprehensive PR context gathering
-- 💬 Optional auto-posting of reviews to GitHub
+- 🔍 **Pull Request Analysis**: Get detailed PR information, file changes, and commit history
+- 📝 **File Content Retrieval**: Fetch content from any file in a GitHub repository
+- 💬 **Review Posting**: Post AI-generated reviews and comments to GitHub PRs
+- 🔧 **Repository Information**: Get repository languages, README, and metadata
+- 🚀 **MCP Integration**: Seamlessly integrates with any MCP-compatible client
+- 🔒 **Secure**: Uses GitHub Personal Access Tokens for authentication
 
 ## Prerequisites
 
 1. **Node.js** (v18 or higher)
-2. **Ollama** (if using local AI)
-3. **Cursor CLI** (if using Cursor)
-4. **Gemini CLI** (if using Gemini)
+2. **GitHub Personal Access Token** with appropriate permissions
 
 ## Quick Start
 
@@ -24,19 +22,23 @@ An MCP (Model Context Protocol) server for automated GitHub Pull Request reviews
 
 ```bash
 git clone <repository-url>
-cd mcp-pr-review-server
+cd mcp-github-server
 npm install
 ```
 
 ### 2. Set up Environment Variables
 
-Copy the example environment file:
+Create a `.env` file:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` with your credentials (see [Required Credentials](#required-credentials) section).
+Edit `.env` with your GitHub token:
+
+```bash
+GITHUB_TOKEN=ghp_your_github_token_here
+```
 
 ### 3. Start the Server
 
@@ -49,53 +51,23 @@ npm start
 ### GitHub Personal Access Token (Required)
 
 1. Go to GitHub → Settings → Developer settings → Personal access tokens
-2. Generate a new token (classic) with these permissions:
+2. Generate a new token (classic or fine-grained) with these permissions:
    - `repo` (Full control of private repositories)
    - `pull_requests` (Read/write pull requests)
 3. Add to `.env` as `GITHUB_TOKEN=ghp_your_token_here`
 
-### AI Provider Setup
-
-#### Option 1: Ollama (Local AI)
-
-```bash
-# Install Ollama
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# Pull a model
-ollama pull llama3.1
-
-# Start Ollama (if not running)
-ollama serve
-```
-
-#### Option 2: Cursor CLI
-
-```bash
-# Install Cursor CLI (check Cursor documentation)
-# Set CURSOR_CLI_PATH in .env if not in PATH
-```
-
-#### Option 3: Gemini CLI
-
-```bash
-# Install Gemini CLI
-# Get API key from Google Cloud Console
-# Set GEMINI_API_KEY in .env
-```
-
-## Usage
+## Configuration
 
 ### MCP Client Integration
 
-Add to your MCP client configuration (e.g., Claude Desktop):
+Add to your MCP client configuration (e.g., Cursor IDE, Claude Desktop):
 
 ```json
 {
   "mcpServers": {
-    "pr-review": {
+    "github": {
       "command": "node",
-      "args": ["/path/to/mcp-pr-review-server/src/index.js"],
+      "args": ["/path/to/mcp-github-server/src/index.js"],
       "env": {
         "GITHUB_TOKEN": "your_token_here"
       }
@@ -104,309 +76,264 @@ Add to your MCP client configuration (e.g., Claude Desktop):
 }
 ```
 
-### Available Tools
-
-#### 1. Review PR
-
-```javascript
-// Review a PR with default settings
-review_pr({
-  pr_url: "https://github.com/owner/repo/pull/123"
-})
-
-// Review with specific model and provider
-review_pr({
-  pr_url: "https://github.com/owner/repo/pull/123",
-  model: "llama3.1",
-  provider: "ollama"
-})
-```
-
-#### 2. Manage Review Prompts
-
-```javascript
-// Get current prompt
-get_review_prompt()
-
-// Update prompt
-update_review_prompt({
-  prompt: "Your custom review instructions..."
-})
-```
-
-#### 3. List Available Models
-
-```javascript
-// List Ollama models
-list_models({ provider: "ollama" })
-
-// List Cursor models
-list_models({ provider: "cursor" })
-
-// List Gemini models
-list_models({ provider: "gemini" })
-```
-
-## How to Configure MCP Client
-
-This section provides detailed instructions for setting up the MCP PR Review Server with various MCP clients.
-
-### Cursor IDE
-
-Cursor has built-in MCP support. Here's how to configure it:
-
-#### Method 1: Using Cursor's MCP Settings
-
-1. **Open Cursor Settings**
-   - Press `Cmd/Ctrl + ,` to open settings
-   - Navigate to "Extensions" → "MCP"
-
-2. **Add Server Configuration**
-   - Click "Add Server"
-   - Fill in the details:
-     - **Name**: `PR Review`
-     - **Command**: `node`
-     - **Args**: `["/absolute/path/to/github-review-mcp/src/index.js"]`
-     - **Environment Variables**:
-       ```
-       GITHUB_TOKEN=your_github_token_here
-       OLLAMA_HOST=http://localhost:11434
-       DEFAULT_MODEL=llama3.1
-       ```
-
-3. **Save and Restart**
-   - Save the configuration
-   - Restart Cursor for changes to take effect
-
-#### Method 2: Manual Configuration File
-
-1. **Locate Cursor's MCP config file**:
-   - **macOS**: `~/Library/Application Support/Cursor/User/globalStorage/mcp-servers.json`
-   - **Windows**: `%APPDATA%\Cursor\User\globalStorage\mcp-servers.json`
-   - **Linux**: `~/.config/Cursor/User/globalStorage/mcp-servers.json`
-
-2. **Edit the configuration file**:
-   ```json
-   {
-     "mcpServers": {
-       "pr-review": {
-         "command": "node",
-         "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
-         "env": {
-           "GITHUB_TOKEN": "your_github_token_here",
-           "OLLAMA_HOST": "http://localhost:11434",
-           "DEFAULT_MODEL": "llama3.1",
-           "PROMPT_FILE_PATH": "/absolute/path/to/github-review-mcp/prompts/review-prompt.md"
-         }
-       }
-     }
-   }
-   ```
-
-3. **Restart Cursor**
-
-#### Using the PR Review Tools in Cursor
-
-Once configured, you can use the tools in Cursor's chat:
-
-```
-Review this PR: https://github.com/owner/repo/pull/123
-
-Or use the tool directly:
-@pr-review review_pr pr_url="https://github.com/owner/repo/pull/123" model="llama3.1" provider="ollama"
-```
-
-### Claude Desktop
-
-Claude Desktop is one of the most popular MCP clients.
-
-#### Configuration Steps
-
-1. **Locate Claude Desktop config file**:
-   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-
-2. **Edit the configuration file**:
-   ```json
-   {
-     "mcpServers": {
-       "pr-review": {
-         "command": "node",
-         "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
-         "env": {
-           "GITHUB_TOKEN": "your_github_token_here",
-           "OLLAMA_HOST": "http://localhost:11434",
-           "DEFAULT_MODEL": "llama3.1"
-         }
-       }
-     }
-   }
-   ```
-
-3. **Restart Claude Desktop**
-
-4. **Verify Connection**:
-   - Look for the 🔧 icon in Claude Desktop
-   - You should see "pr-review" listed as an available server
-
-### VS Code (with MCP Extension)
-
-If you're using VS Code with an MCP extension:
-
-1. **Install MCP Extension**
-   - Search for "MCP" in VS Code extensions
-   - Install a compatible MCP client extension
-
-2. **Configure in settings.json**:
-   ```json
-   {
-     "mcp.servers": {
-       "pr-review": {
-         "command": "node",
-         "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
-         "env": {
-           "GITHUB_TOKEN": "your_github_token_here",
-           "DEFAULT_MODEL": "llama3.1"
-         }
-       }
-     }
-   }
-   ```
-
-### Custom MCP Client
-
-For other MCP clients or custom implementations:
-
-#### Basic Configuration Template
-
-```json
-{
-  "servers": {
-    "pr-review": {
-      "command": "node",
-      "args": ["/absolute/path/to/github-review-mcp/src/index.js"],
-      "env": {
-        "GITHUB_TOKEN": "your_github_token_here",
-        "OLLAMA_HOST": "http://localhost:11434",
-        "DEFAULT_MODEL": "llama3.1",
-        "PROMPT_FILE_PATH": "/absolute/path/to/prompts/review-prompt.md",
-        "AUTO_POST_REVIEW": "false",
-        "MAX_PATCH_SIZE": "2000",
-        "MAX_FILES_TO_REVIEW": "50"
-      }
-    }
-  }
-}
-```
-
-### Important Configuration Notes
-
-#### 1. **Use Absolute Paths**
-Always use absolute paths in your configuration to avoid path resolution issues:
-```bash
-# Find your absolute path
-pwd
-# Example output: /Users/username/projects/github-review-mcp
-```
-
-#### 2. **Environment Variables Priority**
-Environment variables are loaded in this order:
-1. Client configuration `env` object
-2. System environment variables
-3. `.env` file in the project directory
-
-#### 3. **Required vs Optional Variables**
-- **Required**: `GITHUB_TOKEN`
-- **Optional**: All others have sensible defaults
-
-#### 4. **Multiple Configurations**
-You can run multiple instances with different configurations:
-```json
-{
-  "mcpServers": {
-    "pr-review-ollama": {
-      "command": "node",
-      "args": ["/path/to/github-review-mcp/src/index.js"],
-      "env": {
-        "GITHUB_TOKEN": "token",
-        "DEFAULT_MODEL": "llama3.1",
-        "OLLAMA_HOST": "http://localhost:11434"
-      }
-    },
-    "pr-review-gemini": {
-      "command": "node",
-      "args": ["/path/to/github-review-mcp/src/index.js"],
-      "env": {
-        "GITHUB_TOKEN": "token",
-        "DEFAULT_MODEL": "gemini-pro",
-        "GEMINI_API_KEY": "your_gemini_key"
-      }
-    }
-  }
-}
-```
-
-### Troubleshooting MCP Configuration
-
-#### Common Configuration Issues
-
-1. **Server not appearing in client**
-   - Check that the path to `index.js` is correct and absolute
-   - Verify Node.js is in your PATH
-   - Check client logs for error messages
-
-2. **"GitHub token is required" error**
-   - Ensure `GITHUB_TOKEN` is set in the `env` object
-   - Verify the token has correct permissions
-
-3. **Permission denied errors**
-   - Make sure the MCP client has permission to execute Node.js
-   - Check file permissions on the script
-
-4. **Environment variable not loading**
-   - Use absolute paths for file references
-   - Check that environment variables are properly quoted in JSON
-
-#### Debug Mode
-
-Enable debug logging by adding to your environment:
-```json
-{
-  "env": {
-    "DEBUG": "mcp:*",
-    "NODE_ENV": "development"
-  }
-}
-```
-
-## Configuration
-
 ### Environment Variables
 
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
 | `GITHUB_TOKEN` | GitHub Personal Access Token | - | ✅ |
-| `OLLAMA_HOST` | Ollama server URL | `http://localhost:11434` | ❌ |
-| `DEFAULT_MODEL` | Default AI model | `llama3.1` | ❌ |
-| `PROMPT_FILE_PATH` | Review prompt file path | `./prompts/review-prompt.md` | ❌ |
-| `AUTO_POST_REVIEW` | Auto-post reviews to GitHub | `false` | ❌ |
-| `CURSOR_CLI_PATH` | Cursor CLI path | `cursor` | ❌ |
-| `GEMINI_API_KEY` | Gemini API key | - | ❌ |
 | `MAX_PATCH_SIZE` | Max patch size in chars | `2000` | ❌ |
 | `MAX_FILES_TO_REVIEW` | Max files per PR | `50` | ❌ |
+| `REQUEST_TIMEOUT` | Request timeout in ms | `30000` | ❌ |
+| `LOG_LEVEL` | Logging level | `info` | ❌ |
+| `ENABLE_DEBUG` | Enable debug logging | `false` | ❌ |
 
-### Customizing Review Prompts
+## Available Tools
 
-Edit `prompts/review-prompt.md` to customize the review instructions. The prompt supports these placeholders:
+### 1. Get PR Details
 
-- `{{PR_TITLE}}` - Pull request title
-- `{{PR_DESCRIPTION}}` - Pull request description
-- `{{PR_AUTHOR}}` - Pull request author
-- `{{REPOSITORY}}` - Repository name
-- `{{PRIMARY_LANGUAGE}}` - Primary programming language
-- `{{LANGUAGES}}` - All detected languages
-- `{{FILE_CHANGES}}` - Detailed file changes with diffs
-- `{{RECENT_COMMITS}}` - Recent commit messages
+Get comprehensive information about a Pull Request:
+
+```javascript
+get_pr_details({
+  pr_url: "https://github.com/owner/repo/pull/123"
+})
+```
+
+**Returns**: Complete PR information including title, description, author, file counts, etc.
+
+### 2. Get PR Files
+
+Get list of files changed in a Pull Request:
+
+```javascript
+get_pr_files({
+  pr_url: "https://github.com/owner/repo/pull/123",
+  include_patch: true  // Include diff patches (optional)
+})
+```
+
+**Returns**: Array of changed files with their status, additions, deletions, and optionally diff patches.
+
+### 3. Get PR Commits
+
+Get commits in a Pull Request:
+
+```javascript
+get_pr_commits({
+  pr_url: "https://github.com/owner/repo/pull/123"
+})
+```
+
+**Returns**: Array of commits with messages, authors, and timestamps.
+
+### 4. Get File Content
+
+Get content of a specific file from a repository:
+
+```javascript
+get_file_content({
+  owner: "octocat",
+  repo: "Hello-World",
+  path: "README.md",
+  ref: "main"  // Optional: branch, tag, or commit SHA
+})
+```
+
+**Returns**: File content as a string.
+
+### 5. Post PR Review
+
+Post a review comment on a Pull Request:
+
+```javascript
+post_pr_review({
+  pr_url: "https://github.com/owner/repo/pull/123",
+  body: "Your review comment here",
+  event: "COMMENT",  // APPROVE, REQUEST_CHANGES, or COMMENT
+  comments: [  // Optional: line-specific comments
+    {
+      path: "src/file.js",
+      line: 42,
+      body: "Consider using const instead of let here"
+    }
+  ]
+})
+```
+
+**Returns**: Review ID and URL.
+
+### 6. Get Repository Info
+
+Get repository information including languages and README:
+
+```javascript
+get_repo_info({
+  owner: "octocat",
+  repo: "Hello-World"
+})
+```
+
+**Returns**: Repository languages, primary language, README content, etc.
+
+## Usage Examples
+
+### Example 1: Review a Pull Request
+
+```javascript
+// First, get PR details
+const prDetails = await get_pr_details({
+  pr_url: "https://github.com/owner/repo/pull/123"
+});
+
+// Get the files changed
+const files = await get_pr_files({
+  pr_url: "https://github.com/owner/repo/pull/123",
+  include_patch: true
+});
+
+// Analyze the changes (AI thinking happens in MCP client)
+// Then post a review
+await post_pr_review({
+  pr_url: "https://github.com/owner/repo/pull/123",
+  body: "## Code Review\n\nOverall looks good! Here are my observations...",
+  event: "COMMENT"
+});
+```
+
+### Example 2: Get Context for Code Analysis
+
+```javascript
+// Get repository info for context
+const repoInfo = await get_repo_info({
+  owner: "owner",
+  repo: "repo"
+});
+
+// Get specific file content for additional context
+const fileContent = await get_file_content({
+  owner: "owner",
+  repo: "repo",
+  path: "package.json",
+  ref: "main"
+});
+```
+
+## MCP Client Configuration Examples
+
+### Cursor IDE
+
+1. **Using Cursor's MCP Settings**:
+   - Open Cursor Settings (`Cmd/Ctrl + ,`)
+   - Navigate to "Extensions" → "MCP"
+   - Add Server:
+     - **Name**: `GitHub`
+     - **Command**: `node`
+     - **Args**: `["/absolute/path/to/mcp-github-server/src/index.js"]`
+     - **Environment Variables**: `GITHUB_TOKEN=your_token_here`
+
+2. **Manual Configuration File**:
+   - **macOS**: `~/Library/Application Support/Cursor/User/globalStorage/mcp-servers.json`
+   - **Windows**: `%APPDATA%\Cursor\User\globalStorage\mcp-servers.json`
+   - **Linux**: `~/.config/Cursor/User/globalStorage/mcp-servers.json`
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "node",
+      "args": ["/absolute/path/to/mcp-github-server/src/index.js"],
+      "env": {
+        "GITHUB_TOKEN": "your_github_token_here"
+      }
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+1. **Configuration File**:
+   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "node",
+      "args": ["/absolute/path/to/mcp-github-server/src/index.js"],
+      "env": {
+        "GITHUB_TOKEN": "your_github_token_here"
+      }
+    }
+  }
+}
+```
+
+### VS Code (with MCP Extension)
+
+```json
+{
+  "mcp.servers": {
+    "github": {
+      "command": "node",
+      "args": ["/absolute/path/to/mcp-github-server/src/index.js"],
+      "env": {
+        "GITHUB_TOKEN": "your_github_token_here"
+      }
+    }
+  }
+}
+```
+
+## Architecture
+
+This MCP server acts as a **GitHub API wrapper** that:
+
+1. **Receives requests** from MCP clients (Cursor, Claude Desktop, etc.)
+2. **Fetches data** from GitHub API using authenticated requests
+3. **Returns structured data** to the MCP client
+4. **Posts reviews/comments** back to GitHub when requested
+
+The **AI thinking and analysis happens in the MCP client**, not in this server. This server simply provides the tools for GitHub interaction.
+
+```mermaid
+graph TD
+    A["MCP Client<br/>(Cursor, Claude Desktop, etc.)"] --> B["GitHub MCP Server"]
+    B --> C["GitHub API"]
+    
+    subgraph "MCP Client"
+        A1["AI Assistant<br/>(Does all thinking & analysis)"]
+        A2["User Interface"]
+    end
+    
+    subgraph "GitHub MCP Server"
+        B1["Tool: get_pr_details"]
+        B2["Tool: get_pr_files"] 
+        B3["Tool: get_pr_commits"]
+        B4["Tool: get_file_content"]
+        B5["Tool: post_pr_review"]
+        B6["Tool: get_repo_info"]
+    end
+    
+    subgraph "GitHub API"
+        C1["Pull Requests"]
+        C2["Files & Content"]
+        C3["Reviews & Comments"]
+        C4["Repository Info"]
+    end
+    
+    A1 -.->|"Uses tools to gather data"| B1
+    A1 -.->|"Analyzes and decides"| A1
+    A1 -.->|"Posts results"| B5
+    
+    B1 --> C1
+    B2 --> C1
+    B3 --> C1
+    B4 --> C2
+    B5 --> C3
+    B6 --> C4
+```
 
 ## Development
 
@@ -417,11 +344,7 @@ Edit `prompts/review-prompt.md` to customize the review instructions. The prompt
 │   ├── index.js              # Main MCP server
 │   └── services/
 │       ├── github.js         # GitHub API integration
-│       ├── ollama.js         # Ollama integration
-│       ├── review.js         # Review logic
 │       └── config.js         # Configuration management
-├── prompts/
-│   └── review-prompt.md      # Review prompt template
 ├── .env.example              # Environment template
 └── package.json
 ```
@@ -438,46 +361,43 @@ npm run dev  # Runs with --watch flag
 npm test
 ```
 
-## AI Provider Details
-
-### Ollama
-- **Pros**: Fully local, private, free
-- **Cons**: Requires local GPU/CPU resources
-- **Models**: llama3.1, codellama, mistral, etc.
-
-### Cursor
-- **Pros**: High-quality models, IDE integration
-- **Cons**: Requires Cursor subscription
-- **Models**: GPT-4, Claude, etc.
-
-### Gemini
-- **Pros**: Google's latest AI, competitive pricing
-- **Cons**: Requires API key and billing
-- **Models**: gemini-pro, gemini-1.5-pro, etc.
-
 ## Troubleshooting
 
 ### Common Issues
 
 1. **"GitHub token is required" error**
-   - Ensure `GITHUB_TOKEN` is set in `.env`
+   - Ensure `GITHUB_TOKEN` is set in `.env` or MCP client configuration
    - Verify token has correct permissions
 
-2. **"Cannot connect to Ollama" error**
-   - Check if Ollama is running: `ollama serve`
-   - Verify `OLLAMA_HOST` in `.env`
+2. **"Invalid GitHub PR URL format" error**
+   - Ensure URL is in format: `https://github.com/owner/repo/pull/123`
+   - Check for typos in the URL
 
-3. **"Model not found" error**
-   - Pull the model: `ollama pull model-name`
-   - Check available models: `ollama list`
+3. **403 Forbidden errors**
+   - Verify GitHub token has appropriate permissions
+   - Check if repository is private and token has access
 
 4. **MCP connection issues**
    - Verify MCP client configuration
    - Check server logs for errors
+   - Ensure Node.js is in PATH
 
-### Logs
+### Debug Mode
 
-Server logs are written to stderr and can be viewed in your MCP client or terminal.
+Enable debug logging by setting environment variables:
+
+```bash
+ENABLE_DEBUG=true
+LOG_LEVEL=debug
+```
+
+### Rate Limiting
+
+GitHub API has rate limits:
+- **Authenticated requests**: 5,000 per hour
+- **Search API**: 30 per minute
+
+The server will automatically handle rate limiting with appropriate error messages.
 
 ## Contributing
 

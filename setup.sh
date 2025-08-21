@@ -2,7 +2,7 @@
 
 set -e
 
-echo "🚀 Setting up MCP PR Review Server..."
+echo "🚀 Setting up GitHub MCP Server..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -71,35 +71,9 @@ else
     echo -e "${GREEN}✅ .env file already exists${NC}"
 fi
 
-# Create prompts directory
-echo "📁 Creating prompts directory..."
-mkdir -p prompts
-
-# Check if Ollama is available
-echo "🔍 Checking Ollama installation..."
-if command -v ollama &> /dev/null; then
-    echo -e "${GREEN}✅ Ollama found${NC}"
-    
-    # Check if Ollama is running
-    if curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
-        echo -e "${GREEN}✅ Ollama server is running${NC}"
-        
-        # List available models
-        echo "📋 Available Ollama models:"
-        ollama list
-        
-        # Suggest pulling a model if none available
-        if [ $(ollama list | wc -l) -eq 1 ]; then
-            echo -e "${YELLOW}💡 No models found. Consider pulling a model:${NC}"
-            echo "   ollama pull llama3.1"
-            echo "   ollama pull codellama"
-        fi
-    else
-        echo -e "${YELLOW}⚠️  Ollama found but not running. Start with: ollama serve${NC}"
-    fi
-else
-    echo -e "${YELLOW}⚠️  Ollama not found. Install from: https://ollama.ai${NC}"
-fi
+# Verify required directories exist
+echo "📁 Creating required directories..."
+mkdir -p src/services
 
 # Check GitHub token
 echo "🔐 Checking GitHub token..."
@@ -123,12 +97,11 @@ echo -e "${GREEN}🎉 Setup complete!${NC}"
 echo ""
 echo -e "${YELLOW}📋 Next steps:${NC}"
 echo "1. Edit .env file with your GitHub token"
-echo "2. Install and start Ollama (or configure other AI providers)"
-echo "3. Run: npm start"
-echo "4. Configure your MCP client to use this server"
+echo "2. Run: npm start"
+echo "3. Configure your MCP client to use this server"
 echo ""
 echo -e "${YELLOW}📚 Documentation:${NC}"
-echo "- README.md for detailed setup instructions"
-echo "- prompts/review-prompt.md to customize review prompts"
+echo "- README.md for detailed setup and configuration instructions"
+echo "- GitHub token setup guide in README.md"
 echo ""
-echo -e "${GREEN}Happy reviewing! 🚀${NC}"
+echo -e "${GREEN}Ready to integrate with your MCP client! 🚀${NC}"

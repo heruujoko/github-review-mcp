@@ -1,7 +1,7 @@
 {
-    "name": "mcp-pr-review-server",
+    "name": "mcp-github-server",
     "version": "1.0.0",
-    "description": "MCP server for automated PR reviews using GitHub API and Ollama",
+    "description": "MCP server for GitHub API interactions - PR analysis, file content, and review posting",
     "main": "src/index.js",
     "type": "module",
     "scripts": {
@@ -12,11 +12,7 @@
     "dependencies": {
       "@modelcontextprotocol/sdk": "^0.4.0",
       "@octokit/rest": "^20.0.2",
-      "ollama": "^0.5.0",
-      "dotenv": "^16.3.1",
-      "fs": "^0.0.1-security",
-      "path": "^0.12.7",
-      "url": "^0.11.3"
+      "dotenv": "^16.3.1"
     },
     "devDependencies": {
       "@types/node": "^20.0.0"
@@ -24,9 +20,10 @@
     "keywords": [
       "mcp",
       "github",
-      "pr-review",
-      "ollama",
-      "code-review"
+      "api",
+      "pull-request",
+      "code-review",
+      "model-context-protocol"
     ],
     "author": "Heru Joko Priyo Utomo",
     "license": "MIT"
