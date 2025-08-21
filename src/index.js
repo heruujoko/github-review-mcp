@@ -41,7 +41,7 @@ class GitHubMCPServer {
         tools: [
           {
             name: 'get_pr_details',
-            description: 'Get detailed information about a GitHub Pull Request',
+            description: 'Get detailed information about a GitHub Pull Request. TIP: Call get_review_prompts first for comprehensive review guidelines.',
             inputSchema: {
               type: 'object',
               properties: {
@@ -55,7 +55,7 @@ class GitHubMCPServer {
           },
           {
             name: 'get_pr_files',
-            description: 'Get list of files changed in a GitHub Pull Request',
+            description: 'Get list of files changed in a GitHub Pull Request. TIP: Use get_review_prompts first for analysis guidelines.',
             inputSchema: {
               type: 'object',
               properties: {
@@ -115,7 +115,7 @@ class GitHubMCPServer {
           },
           {
             name: 'post_pr_review',
-            description: 'Post a review comment on a GitHub Pull Request',
+            description: 'Post a review comment on a GitHub Pull Request. BEST PRACTICE: Use get_review_prompts first to ensure comprehensive analysis.',
             inputSchema: {
               type: 'object',
               properties: {
@@ -169,6 +169,15 @@ class GitHubMCPServer {
               required: ['owner', 'repo'],
             },
           },
+          {
+            name: 'get_review_prompts',
+            description: '🔥 CALL THIS FIRST! Get comprehensive review guidelines and prompts to perform thorough PR analysis. Essential for high-quality code reviews.',
+            inputSchema: {
+              type: 'object',
+              properties: {},
+              required: [],
+            },
+          },
         ],
       };
     });
@@ -196,6 +205,9 @@ class GitHubMCPServer {
           case 'get_repo_info':
             return await this.handleGetRepoInfo(args);
           
+          case 'get_review_prompts':
+            return await this.handleGetReviewPrompts(args);
+          
           default:
             throw new McpError(
               ErrorCode.MethodNotFound,
@@ -220,11 +232,16 @@ class GitHubMCPServer {
 
     const prDetails = await this.github.getPRDetails(pr_url);
 
+    const result = {
+      reminder: "💡 For comprehensive PR analysis, consider calling 'get_review_prompts' to get detailed review guidelines and best practices.",
+      pr_details: prDetails
+    };
+
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify(prDetails, null, 2),
+          text: JSON.stringify(result, null, 2),
         },
       ],
     };
@@ -248,11 +265,17 @@ class GitHubMCPServer {
       ...(include_patch && file.patch ? { patch: file.patch } : {}),
     }));
 
+    const result = {
+      reminder: "💡 For thorough code review analysis, make sure to call 'get_review_prompts' for comprehensive guidelines on evaluating these file changes.",
+      files, 
+      total_files: files.length
+    };
+
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({ files, total_files: files.length }, null, 2),
+          text: JSON.stringify(result, null, 2),
         },
       ],
     };
@@ -360,6 +383,137 @@ class GitHubMCPServer {
             has_readme: !!readme,
             readme_content: readme,
           }, null, 2),
+        },
+      ],
+    };
+  }
+
+  async handleGetReviewPrompts(args) {
+    const content = `# Pull Request Review Analysis Prompts
+
+## Comprehensive Code Review Guidelines
+
+### 1. Code Quality Assessment
+When reviewing code changes, analyze the following aspects:
+
+- Identify issues: Find blocking issues, important issues, and minor improvements
+- Categorize by type: Security, performance, logic errors, style, etc.
+- Are adequate tests included or do existing tests need updates?
+
+### 2. Architecture and Design Review
+Evaluate the architectural decisions:
+
+- **Design Patterns**: Are appropriate design patterns used consistently?
+- **SOLID Principles**: Does the code adhere to SOLID principles?
+- **Coupling and Cohesion**: Is the code properly decoupled with high cohesion?
+- **Scalability**: Will the changes scale well with increased load or data?
+- **Maintainability**: How easy will it be to modify this code in the future?
+
+### 3. Code Standards and Best Practices
+Check for adherence to coding standards:
+
+- **Naming Conventions**: Are variables, functions, and classes named clearly?
+- **Code Formatting**: Is the code consistently formatted?
+- **Documentation**: Is the code adequately documented where necessary?
+- **Dependencies**: Are new dependencies justified and secure?
+- **Git Practices**: Are commits atomic and well-described?
+
+### 4. Functional Analysis
+Assess the functional aspects:
+
+- **Requirements Fulfillment**: Does the code meet the stated requirements?
+- **Edge Cases**: Are edge cases and error conditions handled?
+- **User Experience**: How do the changes impact the end-user experience?
+- **Backward Compatibility**: Are breaking changes properly documented?
+- **Integration**: How well do the changes integrate with existing systems?
+
+### 5. Review Questions to Consider
+
+#### For Bug Fixes:
+- Does this fix address the root cause or just symptoms?
+- Are there similar issues elsewhere that should be addressed?
+- Is the fix tested with appropriate test cases?
+
+#### For New Features:
+- Is this feature necessary and well-scoped?
+- Does it introduce technical debt?
+- Are there alternative approaches that might be better?
+- Is the feature properly documented?
+
+#### For Refactoring:
+- Does the refactoring improve code quality without changing behavior?
+- Are all affected areas properly tested?
+- Is the scope of refactoring appropriate?
+
+### 6. Security Considerations
+Always evaluate security implications:
+
+- **Input Validation**: Is user input properly validated and sanitized?
+- **Authentication/Authorization**: Are access controls correctly implemented?
+- **Data Protection**: Is sensitive data properly handled and stored?
+- **SQL Injection**: Are database queries protected against injection attacks?
+- **XSS Prevention**: Is the code protected against cross-site scripting?
+- **Dependency Vulnerabilities**: Are third-party dependencies secure and up-to-date?
+
+### 7. Performance Analysis
+Look for performance optimization opportunities:
+
+- **Algorithm Efficiency**: Are efficient algorithms and data structures used?
+- **Database Queries**: Are database operations optimized?
+- **Caching**: Is appropriate caching implemented where beneficial?
+- **Resource Usage**: Is memory and CPU usage reasonable?
+- **Network Calls**: Are API calls and network requests optimized?
+
+### 8. Review Tone and Communication
+When providing feedback:
+
+- Be constructive and specific in your comments
+- Suggest alternatives when pointing out issues
+- Acknowledge good practices and improvements
+- Ask questions to understand the reasoning behind decisions
+- Focus on the code, not the person
+
+### 9. Checklist for Reviewers
+
+Before approving a pull request, ensure:
+
+- [ ] Code compiles without warnings
+- [ ] All tests pass
+- [ ] Code follows project conventions
+- [ ] No obvious security vulnerabilities
+- [ ] Performance impact is acceptable
+- [ ] Documentation is updated if needed
+- [ ] Breaking changes are clearly documented
+- [ ] The change is the minimal necessary to achieve the goal
+
+### 10. Common Red Flags
+
+Watch out for these warning signs:
+
+- Overly complex functions or classes
+- Hardcoded values that should be configurable
+- Missing error handling
+- Inconsistent code style
+- Lack of tests for critical functionality
+- Poor variable or function naming
+- Commented-out code without explanation
+- Large files or functions that should be split
+- Tight coupling between unrelated components`;
+
+    const header = `# 🎯 PR Review Guidelines - START HERE!
+
+This comprehensive guide should be your FIRST step when analyzing any Pull Request. 
+These guidelines will help you perform thorough, professional code reviews.
+
+---
+
+`;
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: header + content,
         },
       ],
     };

@@ -4,6 +4,7 @@ An MCP (Model Context Protocol) server that provides GitHub API tools for Pull R
 
 ## Features
 
+- ⭐ **Smart Review Prompts**: Comprehensive guidelines for thorough PR analysis (call `get_review_prompts` first!)
 - 🔍 **Pull Request Analysis**: Get detailed PR information, file changes, and commit history
 - 📝 **File Content Retrieval**: Fetch content from any file in a GitHub repository
 - 💬 **Review Posting**: Post AI-generated reviews and comments to GitHub PRs
@@ -175,27 +176,58 @@ get_repo_info({
 
 **Returns**: Repository languages, primary language, README content, etc.
 
-## Usage Examples
+### 7. Get Review Prompts ⭐
 
-### Example 1: Review a Pull Request
+**🔥 CALL THIS FIRST!** Get comprehensive review guidelines for thorough PR analysis:
 
 ```javascript
-// First, get PR details
+get_review_prompts()
+```
+
+**Returns**: Detailed markdown guide with code review best practices, security considerations, performance analysis tips, and a comprehensive checklist for reviewers.
+
+**Why use this tool first?**
+- Provides structured approach to code reviews
+- Ensures no critical aspects are missed
+- Includes security and performance considerations
+- Offers communication best practices for review feedback
+
+## Usage Examples
+
+### Example 1: Comprehensive Pull Request Review (RECOMMENDED WORKFLOW)
+
+```javascript
+// 🔥 STEP 1: Get review guidelines FIRST!
+const reviewGuide = await get_review_prompts();
+// This provides comprehensive guidelines for thorough analysis
+
+// STEP 2: Get PR details
 const prDetails = await get_pr_details({
   pr_url: "https://github.com/owner/repo/pull/123"
 });
 
-// Get the files changed
+// STEP 3: Get the files changed
 const files = await get_pr_files({
   pr_url: "https://github.com/owner/repo/pull/123",
   include_patch: true
 });
 
-// Analyze the changes (AI thinking happens in MCP client)
-// Then post a review
+// STEP 4: Get repository context
+const repoInfo = await get_repo_info({
+  owner: "owner",
+  repo: "repo"
+});
+
+// STEP 5: Analyze using the review guidelines
+// Apply the comprehensive checklist from get_review_prompts()
+// - Code quality, security, performance
+// - Architecture, testing, documentation
+// - Best practices and standards
+
+// STEP 6: Post comprehensive review
 await post_pr_review({
   pr_url: "https://github.com/owner/repo/pull/123",
-  body: "## Code Review\n\nOverall looks good! Here are my observations...",
+  body: "## Code Review\n\nFollowing comprehensive review guidelines...\n\n### Analysis Summary\n...",
   event: "COMMENT"
 });
 ```
@@ -360,6 +392,48 @@ npm run dev  # Runs with --watch flag
 ```bash
 npm test
 ```
+
+## 🎯 Best Practices for External LLMs
+
+### Ensuring Comprehensive Reviews
+
+To ensure external LLMs call `get_review_prompts` first and perform thorough analysis:
+
+#### 1. **System Prompt Guidelines**
+Include this in your LLM's system prompt:
+
+```
+When reviewing pull requests:
+1. ALWAYS call get_review_prompts() as your FIRST action
+2. Study the comprehensive review guidelines before analyzing code
+3. Follow the structured approach provided in the guidelines
+4. Use the checklist to ensure no aspects are missed
+```
+
+#### 2. **Workflow Enforcement**
+- The `get_review_prompts` tool is marked with 🔥 and "CALL THIS FIRST!"
+- Other tools include reminder messages about using review prompts
+- Tool descriptions emphasize the importance of following guidelines
+
+#### 3. **Tool Ordering Strategy**
+```javascript
+// RECOMMENDED: This order ensures comprehensive analysis
+1. get_review_prompts()     // Get guidelines first
+2. get_pr_details()         // Understand the PR
+3. get_repo_info()          // Get context
+4. get_pr_files()           // Analyze changes
+5. get_pr_commits()         // Review commit history
+6. post_pr_review()         // Post comprehensive review
+```
+
+#### 4. **Quality Indicators**
+A comprehensive review should include:
+- ✅ Security analysis (from prompts guidelines)
+- ✅ Performance considerations
+- ✅ Code quality assessment
+- ✅ Architecture evaluation
+- ✅ Testing adequacy check
+- ✅ Documentation review
 
 ## Troubleshooting
 
