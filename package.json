@@ -1,31 +1,45 @@
 {
-    "name": "mcp-github-server",
-    "version": "1.0.0",
-    "description": "MCP server for GitHub API interactions - PR analysis, file content, and review posting",
-    "main": "src/index.js",
-    "type": "module",
-      "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js",
+  "name": "mcp-github-server",
+  "version": "1.0.0",
+  "description": "MCP server for GitHub API interactions - PR analysis, file content, and review posting",
+  "main": "src/hosted.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/hosted.js",
+    "dev": "node --watch src/hosted.js",
     "test": "node --test test/*.js",
-    "demo": "node examples/advanced-analysis-demo.js"
+    "demo": "node examples/advanced-analysis-demo.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "tidy": "prettier --write . && eslint . --fix"
   },
-    "dependencies": {
-      "@modelcontextprotocol/sdk": "^0.4.0",
-      "@octokit/rest": "^20.0.2",
-      "dotenv": "^16.3.1"
-    },
-    "devDependencies": {
-      "@types/node": "^20.0.0"
-    },
-    "keywords": [
-      "mcp",
-      "github",
-      "api",
-      "pull-request",
-      "code-review",
-      "model-context-protocol"
-    ],
-    "author": "Heru Joko Priyo Utomo",
-    "license": "MIT"
-  }
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@modelcontextprotocol/sdk": "^0.4.0",
+    "@octokit/rest": "^20.0.2",
+    "dotenv": "^16.3.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@flydotio/dockerfile": "^0.7.10",
+    "@types/node": "^20.0.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2"
+  },
+  "keywords": [
+    "mcp",
+    "github",
+    "api",
+    "pull-request",
+    "code-review",
+    "model-context-protocol"
+  ],
+  "author": "Heru Joko Priyo Utomo",
+  "license": "MIT"
+}

@@ -5,6 +5,7 @@ An MCP (Model Context Protocol) server that provides GitHub API tools for Pull R
 ## Features
 
 ### Core Features
+
 - ⭐ **Smart Review Prompts**: Comprehensive guidelines for thorough PR analysis (call `get_review_prompts` first!)
 - 🔍 **Pull Request Analysis**: Get detailed PR information, file changes, and commit history
 - 📝 **File Content Retrieval**: Fetch content from any file in a GitHub repository
@@ -14,6 +15,7 @@ An MCP (Model Context Protocol) server that provides GitHub API tools for Pull R
 - 🔒 **Secure**: Uses GitHub Personal Access Tokens for authentication
 
 ### 🚀 Advanced Analysis Features
+
 - 📊 **Code Quality Analysis**: Complexity metrics, maintainability index, technical debt assessment
 - 🛡️ **Security Vulnerability Detection**: SQL injection, XSS, hardcoded secrets, and more
 - ⚡ **Diff Impact Assessment**: Risk level analysis and breaking change detection
@@ -85,14 +87,14 @@ Add to your MCP client configuration (e.g., Cursor IDE, Claude Desktop):
 
 ### Environment Variables
 
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `GITHUB_TOKEN` | GitHub Personal Access Token | - | ✅ |
-| `MAX_PATCH_SIZE` | Max patch size in chars | `2000` | ❌ |
-| `MAX_FILES_TO_REVIEW` | Max files per PR | `50` | ❌ |
-| `REQUEST_TIMEOUT` | Request timeout in ms | `30000` | ❌ |
-| `LOG_LEVEL` | Logging level | `info` | ❌ |
-| `ENABLE_DEBUG` | Enable debug logging | `false` | ❌ |
+| Variable              | Description                  | Default | Required |
+| --------------------- | ---------------------------- | ------- | -------- |
+| `GITHUB_TOKEN`        | GitHub Personal Access Token | -       | ✅       |
+| `MAX_PATCH_SIZE`      | Max patch size in chars      | `2000`  | ❌       |
+| `MAX_FILES_TO_REVIEW` | Max files per PR             | `50`    | ❌       |
+| `REQUEST_TIMEOUT`     | Request timeout in ms        | `30000` | ❌       |
+| `LOG_LEVEL`           | Logging level                | `info`  | ❌       |
+| `ENABLE_DEBUG`        | Enable debug logging         | `false` | ❌       |
 
 ## Available Tools
 
@@ -104,8 +106,8 @@ Get comprehensive information about a Pull Request:
 
 ```javascript
 get_pr_details({
-  pr_url: "https://github.com/owner/repo/pull/123"
-})
+  pr_url: 'https://github.com/owner/repo/pull/123',
+});
 ```
 
 **Returns**: Complete PR information including title, description, author, file counts, etc.
@@ -116,9 +118,9 @@ Get list of files changed in a Pull Request:
 
 ```javascript
 get_pr_files({
-  pr_url: "https://github.com/owner/repo/pull/123",
-  include_patch: true  // Include diff patches (optional)
-})
+  pr_url: 'https://github.com/owner/repo/pull/123',
+  include_patch: true, // Include diff patches (optional)
+});
 ```
 
 **Returns**: Array of changed files with their status, additions, deletions, and optionally diff patches.
@@ -129,8 +131,8 @@ Get commits in a Pull Request:
 
 ```javascript
 get_pr_commits({
-  pr_url: "https://github.com/owner/repo/pull/123"
-})
+  pr_url: 'https://github.com/owner/repo/pull/123',
+});
 ```
 
 **Returns**: Array of commits with messages, authors, and timestamps.
@@ -141,11 +143,11 @@ Get content of a specific file from a repository:
 
 ```javascript
 get_file_content({
-  owner: "octocat",
-  repo: "Hello-World",
-  path: "README.md",
-  ref: "main"  // Optional: branch, tag, or commit SHA
-})
+  owner: 'octocat',
+  repo: 'Hello-World',
+  path: 'README.md',
+  ref: 'main', // Optional: branch, tag, or commit SHA
+});
 ```
 
 **Returns**: File content as a string.
@@ -156,17 +158,18 @@ Post a review comment on a Pull Request:
 
 ```javascript
 post_pr_review({
-  pr_url: "https://github.com/owner/repo/pull/123",
-  body: "Your review comment here",
-  event: "COMMENT",  // APPROVE, REQUEST_CHANGES, or COMMENT
-  comments: [  // Optional: line-specific comments
+  pr_url: 'https://github.com/owner/repo/pull/123',
+  body: 'Your review comment here',
+  event: 'COMMENT', // APPROVE, REQUEST_CHANGES, or COMMENT
+  comments: [
+    // Optional: line-specific comments
     {
-      path: "src/file.js",
+      path: 'src/file.js',
       line: 42,
-      body: "Consider using const instead of let here"
-    }
-  ]
-})
+      body: 'Consider using const instead of let here',
+    },
+  ],
+});
 ```
 
 **Returns**: Review ID and URL.
@@ -177,9 +180,9 @@ Get repository information including languages and README:
 
 ```javascript
 get_repo_info({
-  owner: "octocat",
-  repo: "Hello-World"
-})
+  owner: 'octocat',
+  repo: 'Hello-World',
+});
 ```
 
 **Returns**: Repository languages, primary language, README content, etc.
@@ -189,12 +192,13 @@ get_repo_info({
 **🔥 CALL THIS FIRST!** Get comprehensive review guidelines for thorough PR analysis:
 
 ```javascript
-get_review_prompts()
+get_review_prompts();
 ```
 
 **Returns**: Detailed markdown guide with code review best practices, security considerations, performance analysis tips, and a comprehensive checklist for reviewers.
 
 **Why use this tool first?**
+
 - Provides structured approach to code reviews
 - Ensures no critical aspects are missed
 - Includes security and performance considerations
@@ -208,12 +212,13 @@ Analyze code quality metrics including complexity, maintainability, and technica
 
 ```javascript
 analyze_code_quality({
-  pr_url: "https://github.com/owner/repo/pull/123",
-  file_paths: ["src/component.js", "src/utils.js"] // Optional: specific files
-})
+  pr_url: 'https://github.com/owner/repo/pull/123',
+  file_paths: ['src/component.js', 'src/utils.js'], // Optional: specific files
+});
 ```
 
 **Returns**: Detailed quality metrics including:
+
 - Cyclomatic complexity scores
 - Maintainability index
 - Technical debt ratio
@@ -226,11 +231,12 @@ Analyze the impact and risk level of code changes:
 
 ```javascript
 analyze_diff_impact({
-  pr_url: "https://github.com/owner/repo/pull/123"
-})
+  pr_url: 'https://github.com/owner/repo/pull/123',
+});
 ```
 
 **Returns**: Risk assessment including:
+
 - Overall risk level (LOW/MEDIUM/HIGH)
 - Breaking change detection
 - API change analysis
@@ -243,11 +249,12 @@ Scan code changes for security vulnerabilities and patterns:
 
 ```javascript
 detect_security_issues({
-  pr_url: "https://github.com/owner/repo/pull/123"
-})
+  pr_url: 'https://github.com/owner/repo/pull/123',
+});
 ```
 
 **Returns**: Security analysis including:
+
 - Vulnerability detection (SQL injection, XSS, etc.)
 - Hardcoded secrets detection
 - Insecure patterns identification
@@ -260,12 +267,13 @@ Detect anti-patterns, best practices violations, and design issues:
 
 ```javascript
 detect_code_patterns({
-  pr_url: "https://github.com/owner/repo/pull/123",
-  language: "javascript" // Optional: focus on specific language
-})
+  pr_url: 'https://github.com/owner/repo/pull/123',
+  language: 'javascript', // Optional: focus on specific language
+});
 ```
 
 **Returns**: Pattern analysis including:
+
 - Anti-pattern detection (God objects, magic numbers, etc.)
 - Good pattern identification
 - Architectural issue detection
@@ -278,11 +286,12 @@ Analyze dependency changes and their security/compatibility impact:
 
 ```javascript
 analyze_dependencies({
-  pr_url: "https://github.com/owner/repo/pull/123"
-})
+  pr_url: 'https://github.com/owner/repo/pull/123',
+});
 ```
 
 **Returns**: Dependency analysis including:
+
 - New, removed, and updated dependencies
 - Security vulnerability assessment
 - Compatibility issue detection
@@ -295,11 +304,12 @@ Analyze test coverage for changed code and suggest testing improvements:
 
 ```javascript
 analyze_test_coverage({
-  pr_url: "https://github.com/owner/repo/pull/123"
-})
+  pr_url: 'https://github.com/owner/repo/pull/123',
+});
 ```
 
 **Returns**: Test analysis including:
+
 - Coverage estimation for changed code
 - Missing test identification
 - Test quality assessment (unit, integration, edge cases)
@@ -311,13 +321,14 @@ Generate specific, actionable code improvement suggestions:
 
 ```javascript
 generate_suggestions({
-  pr_url: "https://github.com/owner/repo/pull/123",
-  file_path: "src/component.js",
-  focus_areas: ["performance", "security", "maintainability"] // Optional focus
-})
+  pr_url: 'https://github.com/owner/repo/pull/123',
+  file_path: 'src/component.js',
+  focus_areas: ['performance', 'security', 'maintainability'], // Optional focus
+});
 ```
 
 **Returns**: Targeted suggestions including:
+
 - Area-specific improvements (performance, security, etc.)
 - Prioritized recommendation list
 - Implementation examples
@@ -334,61 +345,61 @@ const reviewGuide = await get_review_prompts();
 
 // STEP 2: Get PR details and context
 const prDetails = await get_pr_details({
-  pr_url: "https://github.com/owner/repo/pull/123"
+  pr_url: 'https://github.com/owner/repo/pull/123',
 });
 
 const repoInfo = await get_repo_info({
-  owner: "owner",
-  repo: "repo"
+  owner: 'owner',
+  repo: 'repo',
 });
 
 // STEP 3: Get files and perform basic analysis
 const files = await get_pr_files({
-  pr_url: "https://github.com/owner/repo/pull/123",
-  include_patch: true
+  pr_url: 'https://github.com/owner/repo/pull/123',
+  include_patch: true,
 });
 
 // STEP 4: ENHANCED ANALYSIS - Use new analysis tools
 // Code Quality Analysis
 const qualityAnalysis = await analyze_code_quality({
-  pr_url: "https://github.com/owner/repo/pull/123"
+  pr_url: 'https://github.com/owner/repo/pull/123',
 });
 
 // Security Analysis
 const securityAnalysis = await detect_security_issues({
-  pr_url: "https://github.com/owner/repo/pull/123"
+  pr_url: 'https://github.com/owner/repo/pull/123',
 });
 
 // Impact Assessment
 const impactAnalysis = await analyze_diff_impact({
-  pr_url: "https://github.com/owner/repo/pull/123"
+  pr_url: 'https://github.com/owner/repo/pull/123',
 });
 
 // Pattern Detection
 const patternAnalysis = await detect_code_patterns({
-  pr_url: "https://github.com/owner/repo/pull/123"
+  pr_url: 'https://github.com/owner/repo/pull/123',
 });
 
 // Dependency Analysis
 const dependencyAnalysis = await analyze_dependencies({
-  pr_url: "https://github.com/owner/repo/pull/123"
+  pr_url: 'https://github.com/owner/repo/pull/123',
 });
 
 // Test Coverage Analysis
 const testAnalysis = await analyze_test_coverage({
-  pr_url: "https://github.com/owner/repo/pull/123"
+  pr_url: 'https://github.com/owner/repo/pull/123',
 });
 
 // STEP 5: Generate specific suggestions for key files
 const suggestions = await generate_suggestions({
-  pr_url: "https://github.com/owner/repo/pull/123",
-  file_path: "src/main-component.js",
-  focus_areas: ["security", "performance", "maintainability"]
+  pr_url: 'https://github.com/owner/repo/pull/123',
+  file_path: 'src/main-component.js',
+  focus_areas: ['security', 'performance', 'maintainability'],
 });
 
 // STEP 6: Compile comprehensive review with all analysis data
 await post_pr_review({
-  pr_url: "https://github.com/owner/repo/pull/123",
+  pr_url: 'https://github.com/owner/repo/pull/123',
   body: `## 🔍 Comprehensive Code Review
 
 ### 📊 Analysis Summary
@@ -397,9 +408,11 @@ await post_pr_review({
 - **Risk Level**: ${impactAnalysis.overall_risk}
 
 ### 🛡️ Security Analysis
-${securityAnalysis.vulnerabilities.length > 0 ? 
-  '⚠️ Security issues found - see detailed analysis' : 
-  '✅ No security vulnerabilities detected'}
+${
+  securityAnalysis.vulnerabilities.length > 0
+    ? '⚠️ Security issues found - see detailed analysis'
+    : '✅ No security vulnerabilities detected'
+}
 
 ### 🏗️ Code Quality
 - High complexity files: ${qualityAnalysis.summary.high_complexity_files.length}
@@ -410,11 +423,14 @@ ${securityAnalysis.vulnerabilities.length > 0 ?
 - Missing tests: ${testAnalysis.missing_tests.length} files
 
 ### 📋 Recommendations
-${suggestions.priority_suggestions.slice(0, 3).map(s => `- ${s.description}`).join('\n')}
+${suggestions.priority_suggestions
+  .slice(0, 3)
+  .map(s => `- ${s.description}`)
+  .join('\n')}
 
 ### 🎯 Next Steps
 Based on the comprehensive analysis above...`,
-  event: "COMMENT"
+  event: 'COMMENT',
 });
 ```
 
@@ -423,16 +439,16 @@ Based on the comprehensive analysis above...`,
 ```javascript
 // Get repository info for context
 const repoInfo = await get_repo_info({
-  owner: "owner",
-  repo: "repo"
+  owner: 'owner',
+  repo: 'repo',
 });
 
 // Get specific file content for additional context
 const fileContent = await get_file_content({
-  owner: "owner",
-  repo: "repo",
-  path: "package.json",
-  ref: "main"
+  owner: 'owner',
+  repo: 'repo',
+  path: 'package.json',
+  ref: 'main',
 });
 ```
 
@@ -519,32 +535,32 @@ The **AI thinking and analysis happens in the MCP client**, not in this server. 
 graph TD
     A["MCP Client<br/>(Cursor, Claude Desktop, etc.)"] --> B["GitHub MCP Server"]
     B --> C["GitHub API"]
-    
+
     subgraph "MCP Client"
         A1["AI Assistant<br/>(Does all thinking & analysis)"]
         A2["User Interface"]
     end
-    
+
     subgraph "GitHub MCP Server"
         B1["Tool: get_pr_details"]
-        B2["Tool: get_pr_files"] 
+        B2["Tool: get_pr_files"]
         B3["Tool: get_pr_commits"]
         B4["Tool: get_file_content"]
         B5["Tool: post_pr_review"]
         B6["Tool: get_repo_info"]
     end
-    
+
     subgraph "GitHub API"
         C1["Pull Requests"]
         C2["Files & Content"]
         C3["Reviews & Comments"]
         C4["Repository Info"]
     end
-    
+
     A1 -.->|"Uses tools to gather data"| B1
     A1 -.->|"Analyzes and decides"| A1
     A1 -.->|"Posts results"| B5
-    
+
     B1 --> C1
     B2 --> C1
     B3 --> C1
@@ -589,6 +605,7 @@ pnpm test
 To ensure external LLMs leverage all available tools for thorough code review:
 
 #### 1. **Enhanced System Prompt Guidelines**
+
 Include this in your LLM's system prompt:
 
 ```
@@ -608,6 +625,7 @@ When reviewing pull requests:
 ```
 
 #### 2. **Enhanced Workflow Strategy**
+
 ```javascript
 // COMPREHENSIVE WORKFLOW: Use all analysis tools
 1. get_review_prompts()        // Get guidelines first ⭐
@@ -628,7 +646,9 @@ When reviewing pull requests:
 ```
 
 #### 3. **Analysis Depth Indicators**
+
 A comprehensive review should now include:
+
 - ✅ **Quantified Quality Score** (0-100 from code quality analysis)
 - ✅ **Security Score** (0-100 from security analysis)
 - ✅ **Risk Level Assessment** (LOW/MEDIUM/HIGH from impact analysis)
@@ -638,6 +658,7 @@ A comprehensive review should now include:
 - ✅ **Prioritized Suggestions** (specific, actionable improvements)
 
 #### 4. **Tool Synergy Best Practices**
+
 - **Combine Results**: Use multiple tool outputs to create holistic assessments
 - **Cross-Reference**: Validate findings across different analysis types
 - **Prioritize Issues**: Use security and impact analysis to rank concerns
@@ -647,27 +668,34 @@ A comprehensive review should now include:
 #### 5. **Advanced Analysis Patterns**
 
 **For High-Risk Changes:**
+
 ```javascript
 // Focus on security and impact for sensitive changes
-const security = await detect_security_issues({pr_url});
-const impact = await analyze_diff_impact({pr_url});
-const patterns = await detect_code_patterns({pr_url});
+const security = await detect_security_issues({ pr_url });
+const impact = await analyze_diff_impact({ pr_url });
+const patterns = await detect_code_patterns({ pr_url });
 ```
 
 **For New Features:**
+
 ```javascript
 // Emphasize quality, testing, and patterns
-const quality = await analyze_code_quality({pr_url});
-const testing = await analyze_test_coverage({pr_url});
-const suggestions = await generate_suggestions({pr_url, file_path, focus_areas: ["maintainability", "testing"]});
+const quality = await analyze_code_quality({ pr_url });
+const testing = await analyze_test_coverage({ pr_url });
+const suggestions = await generate_suggestions({
+  pr_url,
+  file_path,
+  focus_areas: ['maintainability', 'testing'],
+});
 ```
 
 **For Dependency Updates:**
+
 ```javascript
 // Focus on dependency and security analysis
-const deps = await analyze_dependencies({pr_url});
-const security = await detect_security_issues({pr_url});
-const impact = await analyze_diff_impact({pr_url});
+const deps = await analyze_dependencies({ pr_url });
+const security = await detect_security_issues({ pr_url });
+const impact = await analyze_diff_impact({ pr_url });
 ```
 
 ## Troubleshooting
@@ -703,6 +731,7 @@ LOG_LEVEL=debug
 ### Rate Limiting
 
 GitHub API has rate limits:
+
 - **Authenticated requests**: 5,000 per hour
 - **Search API**: 30 per minute
 

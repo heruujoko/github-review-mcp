@@ -43,13 +43,15 @@ class GitHubMCPServer {
         tools: [
           {
             name: 'get_pr_details',
-            description: 'Get detailed information about a GitHub Pull Request. TIP: Call get_review_prompts first for comprehensive review guidelines.',
+            description:
+              'Get detailed information about a GitHub Pull Request. TIP: Call get_review_prompts first for comprehensive review guidelines.',
             inputSchema: {
               type: 'object',
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
               },
               required: ['pr_url'],
@@ -57,13 +59,15 @@ class GitHubMCPServer {
           },
           {
             name: 'get_pr_files',
-            description: 'Get list of files changed in a GitHub Pull Request. TIP: Use get_review_prompts first for analysis guidelines.',
+            description:
+              'Get list of files changed in a GitHub Pull Request. TIP: Use get_review_prompts first for analysis guidelines.',
             inputSchema: {
               type: 'object',
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
                 include_patch: {
                   type: 'boolean',
@@ -82,7 +86,8 @@ class GitHubMCPServer {
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
               },
               required: ['pr_url'],
@@ -90,7 +95,8 @@ class GitHubMCPServer {
           },
           {
             name: 'get_file_content',
-            description: 'Get content of a specific file from a GitHub repository',
+            description:
+              'Get content of a specific file from a GitHub repository',
             inputSchema: {
               type: 'object',
               properties: {
@@ -117,13 +123,15 @@ class GitHubMCPServer {
           },
           {
             name: 'post_pr_review',
-            description: 'Post a review comment on a GitHub Pull Request. BEST PRACTICE: Use get_review_prompts first to ensure comprehensive analysis.',
+            description:
+              'Post a review comment on a GitHub Pull Request. BEST PRACTICE: Use get_review_prompts first to ensure comprehensive analysis.',
             inputSchema: {
               type: 'object',
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
                 body: {
                   type: 'string',
@@ -155,7 +163,8 @@ class GitHubMCPServer {
           },
           {
             name: 'get_repo_info',
-            description: 'Get repository information including languages and README',
+            description:
+              'Get repository information including languages and README',
             inputSchema: {
               type: 'object',
               properties: {
@@ -173,7 +182,8 @@ class GitHubMCPServer {
           },
           {
             name: 'get_review_prompts',
-            description: '🔥 CALL THIS FIRST! Get comprehensive review guidelines and prompts to perform thorough PR analysis. Essential for high-quality code reviews.',
+            description:
+              '🔥 CALL THIS FIRST! Get comprehensive review guidelines and prompts to perform thorough PR analysis. Essential for high-quality code reviews.',
             inputSchema: {
               type: 'object',
               properties: {
@@ -187,18 +197,21 @@ class GitHubMCPServer {
           },
           {
             name: 'analyze_code_quality',
-            description: 'Analyze code quality metrics for changed files including complexity, maintainability, and potential issues.',
+            description:
+              'Analyze code quality metrics for changed files including complexity, maintainability, and potential issues.',
             inputSchema: {
               type: 'object',
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
                 file_paths: {
                   type: 'array',
                   items: { type: 'string' },
-                  description: 'Optional: Specific file paths to analyze. If not provided, analyzes all changed files.',
+                  description:
+                    'Optional: Specific file paths to analyze. If not provided, analyzes all changed files.',
                 },
               },
               required: ['pr_url'],
@@ -206,13 +219,15 @@ class GitHubMCPServer {
           },
           {
             name: 'analyze_diff_impact',
-            description: 'Analyze the impact and risk level of code changes in a diff, categorizing changes by type and potential consequences.',
+            description:
+              'Analyze the impact and risk level of code changes in a diff, categorizing changes by type and potential consequences.',
             inputSchema: {
               type: 'object',
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
               },
               required: ['pr_url'],
@@ -220,13 +235,15 @@ class GitHubMCPServer {
           },
           {
             name: 'detect_security_issues',
-            description: 'Scan code changes for potential security vulnerabilities and patterns.',
+            description:
+              'Scan code changes for potential security vulnerabilities and patterns.',
             inputSchema: {
               type: 'object',
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
               },
               required: ['pr_url'],
@@ -234,17 +251,20 @@ class GitHubMCPServer {
           },
           {
             name: 'detect_code_patterns',
-            description: 'Detect anti-patterns, best practices violations, and architectural issues in code changes.',
+            description:
+              'Detect anti-patterns, best practices violations, and architectural issues in code changes.',
             inputSchema: {
               type: 'object',
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
                 language: {
                   type: 'string',
-                  description: 'Programming language to focus pattern detection on (auto-detected if not provided)',
+                  description:
+                    'Programming language to focus pattern detection on (auto-detected if not provided)',
                 },
               },
               required: ['pr_url'],
@@ -252,13 +272,15 @@ class GitHubMCPServer {
           },
           {
             name: 'analyze_dependencies',
-            description: 'Analyze dependency changes and their impact, including new packages, version updates, and security implications.',
+            description:
+              'Analyze dependency changes and their impact, including new packages, version updates, and security implications.',
             inputSchema: {
               type: 'object',
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
               },
               required: ['pr_url'],
@@ -266,13 +288,15 @@ class GitHubMCPServer {
           },
           {
             name: 'analyze_test_coverage',
-            description: 'Analyze test coverage for changed code and suggest testing improvements.',
+            description:
+              'Analyze test coverage for changed code and suggest testing improvements.',
             inputSchema: {
               type: 'object',
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
               },
               required: ['pr_url'],
@@ -280,13 +304,15 @@ class GitHubMCPServer {
           },
           {
             name: 'generate_suggestions',
-            description: 'Generate specific code improvement suggestions based on best practices and patterns.',
+            description:
+              'Generate specific code improvement suggestions based on best practices and patterns.',
             inputSchema: {
               type: 'object',
               properties: {
                 pr_url: {
                   type: 'string',
-                  description: 'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
+                  description:
+                    'GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)',
                 },
                 file_path: {
                   type: 'string',
@@ -296,7 +322,13 @@ class GitHubMCPServer {
                   type: 'array',
                   items: {
                     type: 'string',
-                    enum: ['performance', 'security', 'maintainability', 'readability', 'testing']
+                    enum: [
+                      'performance',
+                      'security',
+                      'maintainability',
+                      'readability',
+                      'testing',
+                    ],
                   },
                   description: 'Specific areas to focus suggestions on',
                 },
@@ -308,53 +340,53 @@ class GitHubMCPServer {
       };
     });
 
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    this.server.setRequestHandler(CallToolRequestSchema, async request => {
       const { name, arguments: args } = request.params;
 
       try {
         switch (name) {
           case 'get_pr_details':
             return await this.handleGetPRDetails(args);
-          
+
           case 'get_pr_files':
             return await this.handleGetPRFiles(args);
-          
+
           case 'get_pr_commits':
             return await this.handleGetPRCommits(args);
-          
+
           case 'get_file_content':
             return await this.handleGetFileContent(args);
-          
+
           case 'post_pr_review':
             return await this.handlePostPRReview(args);
-          
+
           case 'get_repo_info':
             return await this.handleGetRepoInfo(args);
-          
+
           case 'get_review_prompts':
             return await this.handleGetReviewPrompts(args);
-          
+
           case 'analyze_code_quality':
             return await this.handleAnalyzeCodeQuality(args);
-          
+
           case 'analyze_diff_impact':
             return await this.handleAnalyzeDiffImpact(args);
-          
+
           case 'detect_security_issues':
             return await this.handleDetectSecurityIssues(args);
-          
+
           case 'detect_code_patterns':
             return await this.handleDetectCodePatterns(args);
-          
+
           case 'analyze_dependencies':
             return await this.handleAnalyzeDependencies(args);
-          
+
           case 'analyze_test_coverage':
             return await this.handleAnalyzeTestCoverage(args);
-          
+
           case 'generate_suggestions':
             return await this.handleGenerateSuggestions(args);
-          
+
           default:
             throw new McpError(
               ErrorCode.MethodNotFound,
@@ -372,7 +404,7 @@ class GitHubMCPServer {
 
   async handleGetPRDetails(args) {
     const { pr_url } = args;
-    
+
     if (!pr_url) {
       throw new Error('PR URL is required');
     }
@@ -380,8 +412,9 @@ class GitHubMCPServer {
     const prDetails = await this.github.getPRDetails(pr_url);
 
     const result = {
-      reminder: "💡 For comprehensive PR analysis, consider calling 'get_review_prompts' to get detailed review guidelines and best practices.",
-      pr_details: prDetails
+      reminder:
+        "💡 For comprehensive PR analysis, consider calling 'get_review_prompts' to get detailed review guidelines and best practices.",
+      pr_details: prDetails,
     };
 
     return {
@@ -396,7 +429,7 @@ class GitHubMCPServer {
 
   async handleGetPRFiles(args) {
     const { pr_url, include_patch = true } = args;
-    
+
     if (!pr_url) {
       throw new Error('PR URL is required');
     }
@@ -413,9 +446,10 @@ class GitHubMCPServer {
     }));
 
     const result = {
-      reminder: "💡 For thorough code review analysis, make sure to call 'get_review_prompts' for comprehensive guidelines on evaluating these file changes.",
-      files, 
-      total_files: files.length
+      reminder:
+        "💡 For thorough code review analysis, make sure to call 'get_review_prompts' for comprehensive guidelines on evaluating these file changes.",
+      files,
+      total_files: files.length,
     };
 
     return {
@@ -430,7 +464,7 @@ class GitHubMCPServer {
 
   async handleGetPRCommits(args) {
     const { pr_url } = args;
-    
+
     if (!pr_url) {
       throw new Error('PR URL is required');
     }
@@ -441,7 +475,14 @@ class GitHubMCPServer {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({ commits: prDetails.commits, total_commits: prDetails.commits.length }, null, 2),
+          text: JSON.stringify(
+            {
+              commits: prDetails.commits,
+              total_commits: prDetails.commits.length,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
@@ -449,7 +490,7 @@ class GitHubMCPServer {
 
   async handleGetFileContent(args) {
     const { owner, repo, path, ref = 'main' } = args;
-    
+
     if (!owner || !repo || !path) {
       throw new Error('Owner, repo, and path are required');
     }
@@ -460,13 +501,17 @@ class GitHubMCPServer {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({ 
-            owner, 
-            repo, 
-            path, 
-            ref,
-            content: content || null 
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              owner,
+              repo,
+              path,
+              ref,
+              content: content || null,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
@@ -474,13 +519,13 @@ class GitHubMCPServer {
 
   async handlePostPRReview(args) {
     const { pr_url, body, event = 'COMMENT', comments = [] } = args;
-    
+
     if (!pr_url || !body) {
       throw new Error('PR URL and body are required');
     }
 
     const { owner, repo, pull_number } = this.github.parsePRUrl(pr_url);
-    
+
     const result = await this.github.createReview(owner, repo, pull_number, {
       body,
       event,
@@ -491,11 +536,15 @@ class GitHubMCPServer {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({ 
-            success: true, 
-            review_id: result.id,
-            review_url: result.html_url 
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              success: true,
+              review_id: result.id,
+              review_url: result.html_url,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
@@ -503,7 +552,7 @@ class GitHubMCPServer {
 
   async handleGetRepoInfo(args) {
     const { owner, repo } = args;
-    
+
     if (!owner || !repo) {
       throw new Error('Owner and repo are required');
     }
@@ -513,29 +562,34 @@ class GitHubMCPServer {
       this.github.getRepoREADME(owner, repo),
     ]);
 
-    const primaryLanguage = languages && Object.keys(languages).length > 0 
-      ? Object.entries(languages).sort(([,a], [,b]) => b - a)[0][0]
-      : 'Unknown';
+    const primaryLanguage =
+      languages && Object.keys(languages).length > 0
+        ? Object.entries(languages).sort(([, a], [, b]) => b - a)[0][0]
+        : 'Unknown';
 
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({
-            owner,
-            repo,
-            full_name: `${owner}/${repo}`,
-            languages,
-            primary_language: primaryLanguage,
-            has_readme: !!readme,
-            readme_content: readme,
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              owner,
+              repo,
+              full_name: `${owner}/${repo}`,
+              languages,
+              primary_language: primaryLanguage,
+              has_readme: !!readme,
+              readme_content: readme,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
   }
 
-  async handleGetReviewPrompts(args) {
+  async handleGetReviewPrompts(_args) {
     const content = `# Pull Request Review Analysis Prompts
 
 - You are an automated bot helper to review github pull request.
@@ -671,7 +725,7 @@ These guidelines will help you perform thorough, professional code reviews.
 ---
 
 `;
-    
+
     return {
       content: [
         {
@@ -684,23 +738,30 @@ These guidelines will help you perform thorough, professional code reviews.
 
   async handleAnalyzeCodeQuality(args) {
     const { pr_url, file_paths = null } = args;
-    
+
     if (!pr_url) {
       throw new Error('PR URL is required');
     }
 
     const prDetails = await this.github.getPRDetails(pr_url);
-    const analysis = await this.analysis.analyzeCodeQuality(prDetails, file_paths);
+    const analysis = await this.analysis.analyzeCodeQuality(
+      prDetails,
+      file_paths
+    );
 
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({
-            analysis_type: 'code_quality',
-            pr_url,
-            ...analysis
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              analysis_type: 'code_quality',
+              pr_url,
+              ...analysis,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
@@ -708,7 +769,7 @@ These guidelines will help you perform thorough, professional code reviews.
 
   async handleAnalyzeDiffImpact(args) {
     const { pr_url } = args;
-    
+
     if (!pr_url) {
       throw new Error('PR URL is required');
     }
@@ -720,11 +781,15 @@ These guidelines will help you perform thorough, professional code reviews.
       content: [
         {
           type: 'text',
-          text: JSON.stringify({
-            analysis_type: 'diff_impact',
-            pr_url,
-            ...analysis
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              analysis_type: 'diff_impact',
+              pr_url,
+              ...analysis,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
@@ -732,7 +797,7 @@ These guidelines will help you perform thorough, professional code reviews.
 
   async handleDetectSecurityIssues(args) {
     const { pr_url } = args;
-    
+
     if (!pr_url) {
       throw new Error('PR URL is required');
     }
@@ -744,11 +809,15 @@ These guidelines will help you perform thorough, professional code reviews.
       content: [
         {
           type: 'text',
-          text: JSON.stringify({
-            analysis_type: 'security_analysis',
-            pr_url,
-            ...analysis
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              analysis_type: 'security_analysis',
+              pr_url,
+              ...analysis,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
@@ -756,23 +825,30 @@ These guidelines will help you perform thorough, professional code reviews.
 
   async handleDetectCodePatterns(args) {
     const { pr_url, language = null } = args;
-    
+
     if (!pr_url) {
       throw new Error('PR URL is required');
     }
 
     const prDetails = await this.github.getPRDetails(pr_url);
-    const analysis = await this.analysis.detectCodePatterns(prDetails, language);
+    const analysis = await this.analysis.detectCodePatterns(
+      prDetails,
+      language
+    );
 
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({
-            analysis_type: 'pattern_detection',
-            pr_url,
-            ...analysis
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              analysis_type: 'pattern_detection',
+              pr_url,
+              ...analysis,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
@@ -780,7 +856,7 @@ These guidelines will help you perform thorough, professional code reviews.
 
   async handleAnalyzeDependencies(args) {
     const { pr_url } = args;
-    
+
     if (!pr_url) {
       throw new Error('PR URL is required');
     }
@@ -792,11 +868,15 @@ These guidelines will help you perform thorough, professional code reviews.
       content: [
         {
           type: 'text',
-          text: JSON.stringify({
-            analysis_type: 'dependency_analysis',
-            pr_url,
-            ...analysis
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              analysis_type: 'dependency_analysis',
+              pr_url,
+              ...analysis,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
@@ -804,7 +884,7 @@ These guidelines will help you perform thorough, professional code reviews.
 
   async handleAnalyzeTestCoverage(args) {
     const { pr_url } = args;
-    
+
     if (!pr_url) {
       throw new Error('PR URL is required');
     }
@@ -816,11 +896,15 @@ These guidelines will help you perform thorough, professional code reviews.
       content: [
         {
           type: 'text',
-          text: JSON.stringify({
-            analysis_type: 'test_coverage',
-            pr_url,
-            ...analysis
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              analysis_type: 'test_coverage',
+              pr_url,
+              ...analysis,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
@@ -828,25 +912,33 @@ These guidelines will help you perform thorough, professional code reviews.
 
   async handleGenerateSuggestions(args) {
     const { pr_url, file_path, focus_areas = [] } = args;
-    
+
     if (!pr_url || !file_path) {
       throw new Error('PR URL and file path are required');
     }
 
     const prDetails = await this.github.getPRDetails(pr_url);
-    const suggestions = await this.analysis.generateSuggestions(prDetails, file_path, focus_areas);
+    const suggestions = await this.analysis.generateSuggestions(
+      prDetails,
+      file_path,
+      focus_areas
+    );
 
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({
-            analysis_type: 'code_suggestions',
-            pr_url,
-            file_path,
-            focus_areas,
-            ...suggestions
-          }, null, 2),
+          text: JSON.stringify(
+            {
+              analysis_type: 'code_suggestions',
+              pr_url,
+              file_path,
+              focus_areas,
+              ...suggestions,
+            },
+            null,
+            2
+          ),
         },
       ],
     };
