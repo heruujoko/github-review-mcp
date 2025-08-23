@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+*.min.js
+
+# Logs
+*.log
+logs/
+
+# Coverage
+coverage/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+
+# Git
+.git/

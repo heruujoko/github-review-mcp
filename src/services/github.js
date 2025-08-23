@@ -5,7 +5,7 @@ export class GitHubService {
     if (!token) {
       throw new Error('GitHub token is required');
     }
-    
+
     this.octokit = new Octokit({
       auth: token,
     });
@@ -15,11 +15,11 @@ export class GitHubService {
    * Parse GitHub PR URL to extract owner, repo, and pull number
    */
   parsePRUrl(url) {
-    const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)\/pull\/(\d+)/);
+    const match = url.match(/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/);
     if (!match) {
       throw new Error('Invalid GitHub PR URL format');
     }
-    
+
     return {
       owner: match[1],
       repo: match[2],
@@ -32,7 +32,7 @@ export class GitHubService {
    */
   async getPRDetails(url) {
     const { owner, repo, pull_number } = this.parsePRUrl(url);
-    
+
     // Get PR basic information
     const { data: pr } = await this.octokit.pulls.get({
       owner,
@@ -119,11 +119,11 @@ export class GitHubService {
         path,
         ref,
       });
-      
+
       if (data.type === 'file') {
         return Buffer.from(data.content, 'base64').toString('utf8');
       }
-      
+
       return null;
     } catch (error) {
       if (error.status === 404) {
@@ -138,7 +138,7 @@ export class GitHubService {
    */
   async createReview(owner, repo, pull_number, review) {
     const { body, event = 'COMMENT', comments = [] } = review;
-    
+
     const reviewData = {
       owner,
       repo,
@@ -167,7 +167,7 @@ export class GitHubService {
       owner,
       repo,
     });
-    
+
     return data;
   }
 
@@ -180,7 +180,7 @@ export class GitHubService {
         owner,
         repo,
       });
-      
+
       return Buffer.from(data.content, 'base64').toString('utf8');
     } catch (error) {
       if (error.status === 404) {
