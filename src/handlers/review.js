@@ -57,7 +57,7 @@ function initGeminiClient() {
   
   // Initialize model with function calling capabilities
   const model = genAI.getGenerativeModel({ 
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash',
     tools: [{ functionDeclarations: geminiFunctions }]
     // Note: Removing toolConfig for now as it might be causing issues
   });
@@ -293,7 +293,9 @@ export async function reviewPullRequest(prUrl) {
   // Initial prompt for PR review
   const prompt = `You are an expert code reviewer analyzing PR: ${prUrl}
 
-You must start by calling the get_review_prompts function immediately. Do not explain what you will do - just call the function now.`;
+  Final response is in markdown format used for telegram response, please adjust to it.
+
+  You must start by calling the get_review_prompts function immediately. Do not explain what you will do - just call the function now.`;
 
   try {
     console.log('🤖 Sending initial prompt to Gemini...');
