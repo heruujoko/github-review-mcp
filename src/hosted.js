@@ -6,7 +6,7 @@ import { reviewPullRequest } from './handlers/review.js';
 // For a full MCP implementation, you would need to implement the MCP protocol over HTTP/SSE
 // This example shows the basic structure for hosting
 
-const validApiKeys = process.env.VALID_API_KEYS?.split(',') || ['demo-key-123'];
+const validApiKeys = process.env.VALID_API_KEYS?.split(',') || [];
 
 const app = express();
 const port = process.env.PORT || 3000;
