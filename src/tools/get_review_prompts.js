@@ -142,7 +142,9 @@ Watch out for these warning signs:
 - check similar discussion have been made before posting a comment
 - prioritize comments that are actionable and helpful (cirtical issues, security issues, performance issues, etc.)
 - maximum 3 comment on each review request
-- on each your comment indicate this the review was made by AI agents
+- on each your comment indicate this the review was made by AI agents (show the model name)
+- if commenting failed, check the error response, adapt and retry
+- ensure your comment is on markdown format supported by github
 
 `;
 
