@@ -1,32 +1,56 @@
 # GitHub MCP Server
 
-Minimal Model Context Protocol (MCP) server that exposes GitHub-focused tools for AI assistants.
+Minimal Model Context Protocol (MCP) server that exposes GitHub-focused tools for AI assistants. Supports both **local STDIO** and **remote HTTP Streamable** transports.
 
 ---
 
-## 🔧 Quick Start (Local)
+## 🎯 Two Deployment Modes
+
+This MCP server supports **two distinct modes** for different use cases:
+
+| Mode | Transport | Best For | Run Command |
+|------|-----------|----------|-------------|
+| **🖥️ Local STDIO** | Standard I/O | Cursor IDE, Claude Desktop, local MCP clients | `node src/index.js` |
+| **☁️ HTTP Streamable** | HTTP/SSE | n8n, remote clients, fly.io, cloud deployment | `node src/hosted.js` |
+
+### Which Mode Should I Use?
+
+**Use Local STDIO if:**
+- ✅ You're using Cursor IDE or Claude Desktop
+- ✅ Running MCP client on the same machine
+- ✅ Want simple setup with no authentication needed
+
+**Use HTTP Streamable if:**
+- ✅ You're using n8n or remote MCP clients
+- ✅ Need multi-tenant support (multiple users/workflows)
+- ✅ Want to deploy to the cloud (fly.io, Railway, etc.)
+- ✅ Need API key authentication and security
+
+---
+
+# 🖥️ Mode 1: Local STDIO (Desktop Apps)
+
+For Cursor IDE, Claude Desktop, and other local MCP clients.
+
+## Quick Start
 
 ```bash
 # 1. Clone & install
- git clone <repo-url>
- cd github-review-mcp
- pnpm install
+git clone <repo-url>
+cd github-review-mcp
+pnpm install
 
 # 2. Add credentials
- echo "GITHUB_TOKEN=ghp_your_token_here" > .env
+echo "GITHUB_TOKEN=ghp_your_token_here" > .env
 
-# 3. Run the server
- pnpm start
+# 3. Run the STDIO server
+node src/index.js
 ```
 
-The server listens on the port specified by your MCP client (default **3000**).
+## Cursor IDE Setup
 
----
-
-## 🖥️  Using from an MCP Client
-
-### Cursor IDE
 Add this to **Settings → Extensions → MCP** (or your `mcp-servers.json`):
+
 ```json
 {
   "mcpServers": {
@@ -39,14 +63,71 @@ Add this to **Settings → Extensions → MCP** (or your `mcp-servers.json`):
 }
 ```
 
-### Generic MCP Client
-Point the client to `node /absolute/path/github-review-mcp/src/index.js` and pass `GITHUB_TOKEN` in the environment.
+## Claude Desktop Setup
+
+Add to your Claude Desktop MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "github-review": {
+      "command": "node",
+      "args": ["/absolute/path/github-review-mcp/src/index.js"],
+      "env": {
+        "GITHUB_TOKEN": "ghp_your_token_here"
+      }
+    }
+  }
+}
+```
+
+## Other MCP Clients
+
+Point your MCP client to:
+- **Command**: `node /absolute/path/github-review-mcp/src/index.js`
+- **Environment**: `GITHUB_TOKEN=ghp_your_token_here`
+
+## Environment Variables (STDIO Mode)
+
+| Variable | Required | Description | Default |
+|----------|----------|-------------|---------|
+| `GITHUB_TOKEN` | ✅ Yes | GitHub Personal Access Token | - |
+| `MAX_PATCH_SIZE` | No | Maximum diff patch size (chars) | 2000 |
+| `MAX_FILES_TO_REVIEW` | No | Maximum files processed per PR | 50 |
+| `REQUEST_TIMEOUT` | No | HTTP request timeout (ms) | 30000 |
+| `LOG_LEVEL` | No | Logging level (`debug`, `info`, etc.) | info |
+| `ENABLE_DEBUG` | No | Verbose logging (`true`/`false`) | false |
 
 ---
 
-## ☁️ Hosting on fly.io
+# ☁️ Mode 2: HTTP Streamable (Cloud/Remote)
 
-Deploy this MCP server to fly.io for use with n8n or other remote MCP clients.
+For n8n, remote MCP clients, and cloud deployments.
+
+## Quick Start (Local Testing)
+
+```bash
+# 1. Clone & install
+git clone <repo-url>
+cd github-review-mcp
+pnpm install
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env and set:
+#   VALID_API_KEYS=your-secret-key-1,your-secret-key-2
+#   GITHUB_TOKEN=ghp_your_token (optional fallback)
+
+# 3. Run the HTTP server
+pnpm start
+# Or: node src/hosted.js
+```
+
+Server will be available at:
+- 🔌 MCP endpoint: `http://localhost:3000/mcp`
+- 📍 Health check: `http://localhost:3000/health`
+
+## Deploy to fly.io
 
 ### Prerequisites
 - Install [fly.io CLI](https://fly.io/docs/hands-on/install-flyctl/)
@@ -59,7 +140,7 @@ Deploy this MCP server to fly.io for use with n8n or other remote MCP clients.
 git clone <repo-url>
 cd github-review-mcp
 
-# 2. Create a new fly.io app (or use existing config)
+# 2. Create a new fly.io app (or use existing fly.toml config)
 fly launch --no-deploy
 
 # 3. Set required secrets
@@ -95,16 +176,16 @@ fly secrets set \
   GITHUB_TOKEN=ghp_your_token
 ```
 
-### Security Model
+## Security Model
 
-This server supports two authentication modes:
+The HTTP Streamable mode uses a **dual authentication system**:
 
-#### 1. API Key Authentication (Required)
+### 1. API Key Authentication (Required)
 All requests to `/mcp` must include:
 - **Header**: `Authorization: Bearer <api_key>`
 - **Value**: Must match one of the keys in `VALID_API_KEYS`
 
-#### 2. GitHub Token (Flexible)
+### 2. GitHub Token (Flexible)
 GitHub authentication can be provided in two ways:
 
 **Option A: Per-Request Override (Recommended for n8n)**
@@ -113,13 +194,11 @@ GitHub authentication can be provided in two ways:
 - Useful for multi-tenant scenarios
 
 **Option B: Server Default**
-- Set `GITHUB_TOKEN` as a fly.io secret
+- Set `GITHUB_TOKEN` as a fly.io secret or environment variable
 - Used when `X-GitHub-Token` header is not provided
 - Good for single-user or internal use
 
----
-
-## 🔌 Using with n8n
+## Using with n8n
 
 Configure n8n's **MCP Client** node with these settings:
 
@@ -177,7 +256,7 @@ In the Header Auth credential, configure:
    - The AI model runs in n8n, not on the MCP server
    - MCP server only provides tools for GitHub operations
 
-### Benefits of Hosted MCP
+### Benefits of HTTP Streamable Mode
 
 ✅ **Multi-tenant**: Different workflows can use different GitHub accounts
 ✅ **Secure**: API keys protect your MCP server from unauthorized access
@@ -185,11 +264,9 @@ In the Header Auth credential, configure:
 ✅ **Scalable**: Deployed on fly.io with auto-scaling
 ✅ **Cost-effective**: Pay only for MCP hosting, AI costs via n8n's LLM
 
----
+## Docker Deployment
 
-## 🐳 Docker (Local Development)
-
-A Dockerfile for local testing is included.
+A Dockerfile is included for containerized deployments.
 
 ```bash
 # Build
@@ -213,57 +290,71 @@ curl -X POST http://localhost:3000/mcp \
   -H "Authorization: Bearer test-key-1" \
   -H "X-GitHub-Token: ghp_your_token" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
   -d '{"jsonrpc":"2.0","method":"tools/list","id":1}'
 ```
 
 ---
 
-## ⚙️ Environment Variables
+# 🛠️ Available Tools
 
-### For Hosted Mode (fly.io)
-| Variable              | Required | Description                           | Default |
-|-----------------------|----------|---------------------------------------|---------|
-| `VALID_API_KEYS`      | ✅ Yes   | Comma-separated API keys for authentication | -       |
-| `GITHUB_TOKEN`        | ⚠️ Optional | Default GitHub token (can be overridden) | -       |
-| `PORT`                | No       | Server port                           | 3000    |
+Both modes provide the same comprehensive set of tools:
 
-### For Local/STDIO Mode
-| Variable              | Required | Description                           | Default |
-|-----------------------|----------|---------------------------------------|---------|
-| `GITHUB_TOKEN`        | ✅ Yes   | GitHub Personal Access Token          | -       |
-
-### Optional Configuration (All Modes)
-| Variable              | Description                           | Default |
-|-----------------------|---------------------------------------|---------|
-| `MAX_PATCH_SIZE`      | Maximum diff patch size (chars)       | 2000    |
-| `MAX_FILES_TO_REVIEW` | Maximum files processed per PR        | 50      |
-| `REQUEST_TIMEOUT`     | HTTP request timeout (ms)             | 30000   |
-| `LOG_LEVEL`           | Logging level (`debug`, `info`, …)    | info    |
-| `ENABLE_DEBUG`        | Verbose logging (`true`/`false`)      | false   |
-
----
-
-## 🛠️  Available Tools
-Core PR utilities plus advanced analysis modules:
+## Core PR Utilities
 
 - `get_review_prompts` ⭐ (*call this first!*)
-- `get_pr_details`
-- `get_pr_files`
-- `get_pr_commits`
-- `get_file_content`
-- `post_pr_review`
-- `get_repo_info`
+- `get_pr_details` - Get detailed PR information
+- `get_pr_files` - List changed files with diffs
+- `get_pr_commits` - Get commit history
+- `get_file_content` - Fetch specific file content
+- `post_pr_review` - Post review comments
+- `get_repo_info` - Get repository metadata
 
-Advanced analysis (🚀):
+## Advanced Analysis Tools 🚀
 
-- `analyze_code_quality`
-- `analyze_diff_impact`
-- `detect_security_issues`
-- `detect_code_patterns`
-- `analyze_dependencies`
-- `analyze_test_coverage`
-- `generate_suggestions`
+- `analyze_code_quality` - Code complexity and maintainability metrics
+- `analyze_diff_impact` - Risk assessment of changes
+- `detect_security_issues` - Security vulnerability scanning
+- `detect_code_patterns` - Anti-patterns and best practices
+- `analyze_dependencies` - Dependency change analysis
+- `analyze_test_coverage` - Test coverage suggestions
+- `generate_suggestions` - Code improvement recommendations
 
 ---
 
-For detailed usage examples, see the original README history or the inline JSDoc in `src/tools/`.
+## 📋 Complete Environment Variables Reference
+
+### STDIO Mode (Local)
+| Variable | Required | Description | Default |
+|----------|----------|-------------|---------|
+| `GITHUB_TOKEN` | ✅ Yes | GitHub Personal Access Token | - |
+
+### HTTP Streamable Mode (Cloud)
+| Variable | Required | Description | Default |
+|----------|----------|-------------|---------|
+| `VALID_API_KEYS` | ✅ Yes | Comma-separated API keys | - |
+| `GITHUB_TOKEN` | ⚠️ Optional | Default GitHub token | - |
+| `PORT` | No | Server port | 3000 |
+
+### Optional (All Modes)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MAX_PATCH_SIZE` | Maximum diff patch size (chars) | 2000 |
+| `MAX_FILES_TO_REVIEW` | Maximum files per PR | 50 |
+| `REQUEST_TIMEOUT` | HTTP timeout (ms) | 30000 |
+| `LOG_LEVEL` | Logging level | info |
+| `ENABLE_DEBUG` | Verbose logging | false |
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+MIT
+
+---
+
+For detailed usage examples and tool specifications, see the inline JSDoc in `src/tools/`.
