@@ -31,9 +31,8 @@ Legend: ✅ done + green ✅   🟡 test red / stub ⏳   ⬜ not started
 
 ## Phase 4 — Tools
 - ✅ 4.1 Tool registry pattern (`tools/index.ts`) — committed `866ed60`; registerTool/getTool/toolDefinitions/resetRegistry + index.test.ts pass.
-- 🟡 4.2 Individual tools — **IN PROGRESS / BROKEN.** `shared.ts` (allowlist gate, service bundle, result formatting) exists. `tools/core.tools.test.ts` is UNTRACKED and FAILS TO LOAD: imports `./registry.js` which does not exist (registry lives in `index.ts`). No individual tool files exist yet (`get_review_strategy.ts`, `get_pr_details.ts`, `get_pr_files.ts`, `get_pr_diff_range.ts`, `get_file_content.ts`, `post_pr_review.ts`, `get_pr_commits.ts`, `get_repo_info.ts`, `analyze_*.ts`).
-  → Next action: (a) fix the broken `core.tools.test.ts` import path (likely needs `./index.js` or a real `registry.ts` split); (b) implement each individual tool consuming `shared.ts` helpers; (c) unit tests per tool with mocked services.
-- Gate: NOT met. ❌ Current `pnpm test` fails to load due to broken untracked test.
+- ✅ 4.2 Individual tools — implemented and green. `shared.ts` centralizes allowlist, GitHub service construction, and ToolResult envelopes. `tools/registry.ts` owns registry primitives; `tools/index.ts` aggregates and registers all tools. Implemented: `get_review_strategy`, `get_pr_details`, `get_pr_files`, `get_pr_commits`, `get_file_content`, `get_repo_info`, `get_pr_diff_range`, `post_pr_review`, `analyze_code_quality`, `analyze_diff_impact`, `analyze_dependencies`, `analyze_test_coverage`, `detect_security_issues`, `detect_code_patterns`. Data-only analysis heuristics live in `services/analysis.ts`.
+- Gate: green ✅ verified 2026-07-04 via `cd refactor && pnpm typecheck && pnpm test` → 57 tests passed.
 
 ## Phase 5 — MCP server over HTTP/SSE  ⬜
 - ⬜ 5.1 Server + transport (`server.ts`) — modern MCP SDK Streamable HTTP, header-secret auth, rate limit, `/health`, per-request install Octokit
