@@ -8,7 +8,7 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const FIXTURES = path.join(__dirname, '__fixtures__');
 
 describe('StrategyService catalog loading', () => {
-  const cleanDir = path.join(FIXTURES, 'strategies-clean');
+  const cleanDir = path.join(FIXTURES, 'strategies-catalog-clean');
 
   beforeEach(async () => {
     await fs.rm(cleanDir, { recursive: true, force: true });
