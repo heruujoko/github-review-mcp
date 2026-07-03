@@ -25,15 +25,15 @@ Legend: ✅ done + green ✅   🟡 test red / stub ⏳   ⬜ not started
 - ✅ 2.3 Repo config resolution — intersect, fallback (default→full-review), unknown→error listing
 - Gate: 32 strategy+config tests green ✓
 
-## Phase 3 — GitHub service  ⚠️ BLOCKED (needs implementation)
-- 🟡 3.1 Octokit wrapper (`services/github.ts`) — **RED tests only, `github.ts` is a 1-line stub.** 13 tests failing: "GitHubService is not a constructor". Need to implement: `getPRDetails`, `getPRFiles`, `getFileContent`, `getDiffRange`, `createReview`, `getRepoInfo`, `parsePRUrl`.
-  → Next action: implement `github.ts` to green-up the existing tests (TDD green step).
-- Gate: NOT met. ❌
+## Phase 3 — GitHub service
+- ✅ 3.1 Octokit wrapper (`services/github.ts`) — committed `5f96cb7`; parseURL, getPRDetails/Files/Commits, getFileContent, getDiffRange (compare API), createReview (inline comment mapping), getRepoInfo. 13 tests pass.
+- Gate: green ✓ (verified 2026-07-03 via `pnpm vitest run --exclude '**/core.tools.test.ts'` → 50 passed)
 
-## Phase 4 — Tools  ⬜
-- ⬜ 4.1 Tool registry pattern (`tools/index.ts`)
-- ⬜ 4.2 Individual tools (`get_review_strategy`, `get_pr_details`, `get_pr_files`, `get_pr_diff_range`, `get_file_content`, `post_pr_review`, `get_pr_commits`, `get_repo_info`, `analyze_*` ported data-only)
-- Gate: each tool unit-tested with mocked services. ⬜
+## Phase 4 — Tools
+- ✅ 4.1 Tool registry pattern (`tools/index.ts`) — committed `866ed60`; registerTool/getTool/toolDefinitions/resetRegistry + index.test.ts pass.
+- 🟡 4.2 Individual tools — **IN PROGRESS / BROKEN.** `shared.ts` (allowlist gate, service bundle, result formatting) exists. `tools/core.tools.test.ts` is UNTRACKED and FAILS TO LOAD: imports `./registry.js` which does not exist (registry lives in `index.ts`). No individual tool files exist yet (`get_review_strategy.ts`, `get_pr_details.ts`, `get_pr_files.ts`, `get_pr_diff_range.ts`, `get_file_content.ts`, `post_pr_review.ts`, `get_pr_commits.ts`, `get_repo_info.ts`, `analyze_*.ts`).
+  → Next action: (a) fix the broken `core.tools.test.ts` import path (likely needs `./index.js` or a real `registry.ts` split); (b) implement each individual tool consuming `shared.ts` helpers; (c) unit tests per tool with mocked services.
+- Gate: NOT met. ❌ Current `pnpm test` fails to load due to broken untracked test.
 
 ## Phase 5 — MCP server over HTTP/SSE  ⬜
 - ⬜ 5.1 Server + transport (`server.ts`) — modern MCP SDK Streamable HTTP, header-secret auth, rate limit, `/health`, per-request install Octokit
