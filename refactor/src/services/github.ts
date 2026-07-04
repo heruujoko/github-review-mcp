@@ -327,6 +327,7 @@ export class GitHubService implements IGitHubService {
       body: c.body,
       side: c.side,
       start_line: c.start_line,
+      start_side: c.start_side,
     }));
     const res = await this.octokit.rest.pulls.createReview({
       owner,

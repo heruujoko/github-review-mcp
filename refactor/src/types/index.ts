@@ -174,6 +174,8 @@ export interface InlineComment {
   start_line?: number;
   /** Which side of the diff: LEFT (base) or RIGHT (head). */
   side?: 'LEFT' | 'RIGHT';
+  /** Optional starting side for multi-line comments. Required when start_line is set. */
+  start_side?: 'LEFT' | 'RIGHT';
 }
 
 /**

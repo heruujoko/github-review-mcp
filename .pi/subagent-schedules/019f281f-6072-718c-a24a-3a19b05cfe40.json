@@ -17,10 +17,10 @@
       "isolation": "worktree",
       "enabled": true,
       "createdAt": "2026-07-04T07:55:44.641Z",
-      "runCount": 5,
+      "runCount": 6,
       "lastStatus": "running",
-      "lastRun": "2026-07-04T08:12:06.012Z",
-      "nextRun": "2026-07-04T08:11:03.118Z"
+      "lastRun": "2026-07-04T08:15:59.940Z",
+      "nextRun": "2026-07-04T08:15:06.012Z"
     }
   ]
 }
