@@ -493,6 +493,7 @@ export class AnalysisService {
     const codeText = addedLines.join('\n');
     for (const [category, patterns] of Object.entries(SECURITY_PATTERNS)) {
       for (const pattern of patterns) {
+        pattern.lastIndex = 0;
         if (pattern.test(codeText)) {
           vulnerabilities.push({
             type: category,
