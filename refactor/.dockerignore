@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.git
+.gitignore
+src/**/*.test.ts
+src/**/__fixtures__
+strategies/*.test.ts
+vitest.config.ts
+vitest.setup.ts

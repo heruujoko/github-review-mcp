@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "O2u61-4j3A",
+      "name": "PR maintainer cycle",
+      "description": "PR maintainer cycle",
+      "schedule": "3m",
+      "scheduleType": "interval",
+      "intervalMs": 180000,
+      "subagent_type": "pr_monkey",
+      "prompt": "You are running ONE cycle of the PR-maintainer loop for PR heruujoko/github-review-mcp#3.\n\nRepository: /Users/herujokoutomo/Code/github-review-mcp\nState file: .pr-maintainer-loop/heruujoko__github-review-mcp__3.json\nPR URL: https://github.com/heruujoko/github-review-mcp/pull/3\n\nImportant current context from preflight:\n- gh auth is working for heruujoko/github-review-mcp.\n- PR is OPEN and mergeable.\n- Inline review comments currently include at least two actionable Codex comments:\n  1. refactor/src/services/github.ts line 179: paginate PR file, commit, and review listings; get_pr_details and analysis tools currently only see first page.\n  2. refactor/src/services/analysis.ts line 496: SECURITY_PATTERNS regexes use global flag; RegExp.test mutates lastIndex and can skip matches across files. Reset lastIndex before each test or remove global flags.\n- One top-level Codex review comment is informational/generic and should be classified as informational-only unless new actionable content appears.\n\nRun this cycle, in strict order:\n\n1. Verify `gh` is installed and `gh auth status` succeeds. On failure: stop the cycle, log it in history, do NOT touch quietCycles.\n\n2. Enumerate ALL feedback threads — BOTH:\n   - inline review comments: `gh api repos/heruujoko/github-review-mcp/pulls/3/comments --paginate`\n   - top-level reviews + issue comments: `gh pr view 3 --repo heruujoko/github-review-mcp --json reviews,comments`\n   Record for each: id, file:line (inline), author, author_type, body summary, commit_id.\n\n3. Classify EVERY thread:\n   - actionable | already-applied | outdated/invalid | informational-only\n   A bot/system author is NOT a reason to skip a thread.\n\n4. Compute NEW actionable = actionable threads whose id is NOT in handledThreadIds AND NOT in inProgressThreadIds from the state file.\n\n5. If NEW actionable exists:\n   a. quietCycles = 0\n   b. Select ONE item only. Prefer the smallest/safest fix if there are multiple.\n   c. Make the minimal code fix on branch refactor/mcp-review-typescript, run relevant validation, commit and push the fix.\n   d. Reply in the SAME review thread via GitHub API, and reference the fix commit SHA in the reply. Resolve where appropriate if supported.\n   e. Move that thread id to handledThreadIds after fix+reply are complete; if fix is pending, use inProgressThreadIds.\n\n6. If NO NEW actionable:\n   a. quietCycles += 1\n   b. For any inProgressThreadIds whose fix+reply have now landed, move them to handledThreadIds.\n\n7. Reflect: re-run thread enumeration and confirm every actionable thread is in terminal state (replied+resolved, OR explicitly still-open with a reason).\n\n8. Update state file atomically: lastCycleAt, quietCycles, handledThreadIds, inProgressThreadIds, cycleCount+1, append a history entry { cycle, ts, newActionable, quietCycles, note }.\n\n9. Checkpoint the loop with loop_designer action checkpoint if available; otherwise record the checkpoint in your final summary.\n\nSTOP RULES:\n- quietCycles >= 3 → PR calm.\n- PR merged or closed.\n- gh auth broken 2 cycles in a row.\n- cycleCount >= 20.\n- Scope drift / destructive command / secret access.\n\nNEVER merge the PR. NEVER silently resolve a thread without a reply referencing the fix SHA. NEVER report quiet while any non-informational thread is unclassified. NEVER re-handle a thread id already in handledThreadIds.\n\nReturn concise final summary: cycle number, selected item, commit SHA if any, pushed?, replied thread id?, quietCycles, remaining actionable items.",
+      "model": "",
+      "thinking": "low",
+      "max_turns": 30,
+      "isolated": false,
+      "isolation": "worktree",
+      "enabled": true,
+      "createdAt": "2026-07-04T07:55:44.641Z",
+      "runCount": 6,
+      "lastStatus": "running",
+      "lastRun": "2026-07-04T08:15:59.940Z",
+      "nextRun": "2026-07-04T08:15:06.012Z"
+    }
+  ]
+}
