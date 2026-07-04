@@ -178,7 +178,7 @@ export class AnalysisService {
     if (!file.patch) return analysis;
 
     const lines = file.patch.split('\n');
-    const addedLines = lines.filter((l) => l.startsWith('+')).slice(1);
+    const addedLines = lines.filter((l) => l.startsWith('+'));
 
     analysis.metrics.lines_of_code = addedLines.length;
     analysis.metrics.cyclomatic_complexity = this.calculateComplexity(addedLines, language);

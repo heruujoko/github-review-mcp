@@ -1,0 +1,55 @@
+{
+  "pr": {
+    "owner": "heruujoko",
+    "repo": "github-review-mcp",
+    "number": 3,
+    "url": "https://github.com/heruujoko/github-review-mcp/pull/3"
+  },
+  "baseSha": "989816fb2e5392d227b6fdc2ad1c3f13b76bc775",
+  "handledThreadIds": [
+    "3522797510",
+    "3522797511",
+    "3522830247"
+  ],
+  "inProgressThreadIds": [],
+  "quietCycles": 0,
+  "cycleCount": 4,
+  "lastCycleAt": "2026-07-04T08:11:26.000Z",
+  "history": [
+    {
+      "cycle": 0,
+      "ts": "2026-07-04T15:45:00.000Z",
+      "newActionable": 0,
+      "quietCycles": 0,
+      "note": "Loop seeded. Pre-existing inline review comments, top-level reviews, and issue comments inventory was empty."
+    },
+    {
+      "cycle": 1,
+      "ts": "2026-07-04T08:00:10.560397Z",
+      "newActionable": 2,
+      "quietCycles": 0,
+      "note": "Handled inline thread 3522797511: reset SECURITY_PATTERNS regex lastIndex before each test; committed/pushed 8e93521cacfab62d5446dc225c2c2748c6ce72f6 and replied in-thread. Remaining actionable: 3522797510 pagination."
+    },
+    {
+      "cycle": 2,
+      "ts": "2026-07-04T08:04:45.942542Z",
+      "newActionable": 1,
+      "quietCycles": 0,
+      "note": "Handled inline thread 3522797510: paginated PR files, commits, and reviews via Octokit paginate; committed/pushed 531d7d70889c13faa1282583af8a80b4beca9fb2 and replied in-thread. Remaining actionable: none known; prior thread 3522797511 already handled."
+    },
+    {
+      "cycle": 3,
+      "ts": "2026-07-04T08:05:29.593272Z",
+      "newActionable": 0,
+      "quietCycles": 1,
+      "note": "Enumerated inline review comments, top-level reviews, and issue comments. No new actionable threads: Codex pagination thread 3522797510 and regex lastIndex thread 3522797511 were already handled with in-thread replies; top-level Codex review remains informational-only."
+    },
+    {
+      "cycle": 4,
+      "ts": "2026-07-04T08:11:26.000Z",
+      "newActionable": 4,
+      "quietCycles": 0,
+      "note": "New Codex review (commit 531d7d7) produced 4 new actionable threads. Handled 3522830247: reset ANTI_PATTERNS/GOOD_PATTERNS regex lastIndex before each test; committed/pushed b19f1e8 and replied in-thread. Remaining actionable: 3522830244 (preserve first added line), 3522830246 (match deps by basename), 3522830248 (forward start_side)."
+    }
+  ]
+}
