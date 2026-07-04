@@ -14,6 +14,10 @@ function makeMockOctokit(overrides: Partial<{
   languages: Record<string, number>;
   readme: string | null;
 }> = {}) {
+  const paginate = vi.fn(async (method: (params: Record<string, unknown>) => Promise<{ data: unknown[] }>, params: Record<string, unknown>) => {
+    const res = await method(params);
+    return res.data;
+  });
   const pulls = {
     get: vi.fn(async () => ({ data: overrides.pr ?? { id: 1, number: 42, title: 'T', body: null, state: 'open', user: { login: 'octocat' }, created_at: '2024-01-01', updated_at: '2024-01-02', base: { ref: 'main' }, head: { ref: 'feat' }, mergeable: true, additions: 5, deletions: 1, changed_files: 2 } })),
     listFiles: vi.fn(async () => ({ data: overrides.files ?? [{ filename: 'a.js', status: 'modified', additions: 2, deletions: 1, changes: 3, patch: '@@ -1,2 +1,3 @@' }] })),
@@ -43,7 +47,7 @@ function makeMockOctokit(overrides: Partial<{
       return { data: { content: Buffer.from(overrides.readme ?? '# Readme').toString('base64') } };
     }),
   };
-  return { rest: { pulls, repos } };
+  return { paginate, rest: { pulls, repos } };
 }
 
 const PR_URL = 'https://github.com/octocat/Hello-World/pull/42';
@@ -73,6 +77,10 @@ describe('GitHubService.getPRDetails', () => {
     expect(details.commits[0].sha).toBe('s1');
     expect(details.existing_reviews[0].user).toBe('r');
     expect(details.repository.full_name).toBe('octocat/Hello-World');
+    expect(mock.paginate).toHaveBeenCalledTimes(3);
+    expect(mock.paginate).toHaveBeenCalledWith(mock.rest.pulls.listFiles, { owner: 'octocat', repo: 'Hello-World', pull_number: 42, per_page: 100 });
+    expect(mock.paginate).toHaveBeenCalledWith(mock.rest.pulls.listCommits, { owner: 'octocat', repo: 'Hello-World', pull_number: 42, per_page: 100 });
+    expect(mock.paginate).toHaveBeenCalledWith(mock.rest.pulls.listReviews, { owner: 'octocat', repo: 'Hello-World', pull_number: 42, per_page: 100 });
   });
 });
 

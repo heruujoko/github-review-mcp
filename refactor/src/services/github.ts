@@ -25,6 +25,10 @@ import type {
  * transport specifics and easily mockable in tests.
  */
 interface OctokitSlice {
+  paginate?<T, P extends object>(
+    method: (params: P) => Promise<{ data: T[] }>,
+    params: P,
+  ): Promise<T[]>;
   rest: {
     pulls: {
       get(params: { owner: string; repo: string; pull_number: number }): Promise<{
@@ -148,8 +152,23 @@ interface DiffFileRaw {
 const PR_URL_RE =
   /^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)(?:[/?#].*)?$/i;
 
-/** Default page size for listing files and commits; capped at GitHub's max. */
+/** Default page size for paginated PR listings; capped at GitHub's max. */
 const LIST_PER_PAGE = 100;
+
+async function paginatePRList<T>(
+  octokit: OctokitSlice,
+  method: (params: never) => Promise<{ data: T[] }>,
+  params: Record<string, unknown>,
+): Promise<T[]> {
+  const requestParams = { ...params, per_page: LIST_PER_PAGE };
+  const request = method as (params: Record<string, unknown>) => Promise<{ data: T[] }>;
+  if (octokit.paginate) {
+    return octokit.paginate(request, requestParams);
+  }
+
+  const firstPage = await request(requestParams);
+  return firstPage.data;
+}
 
 export class GitHubService implements IGitHubService {
   constructor(private readonly octokit: OctokitSlice) {}
@@ -172,23 +191,21 @@ export class GitHubService implements IGitHubService {
 
     const prRes = await api.pulls.get({ owner, repo, pull_number });
     const pr = prRes.data;
-    const filesRes = await api.pulls.listFiles({
-      owner,
-      repo,
-      pull_number,
-      per_page: LIST_PER_PAGE,
-    });
-    const commitsRes = await api.pulls.listCommits({
-      owner,
-      repo,
-      pull_number,
-      per_page: LIST_PER_PAGE,
-    });
-    const reviewsRes = await api.pulls.listReviews({
-      owner,
-      repo,
-      pull_number,
-    });
+    const files = await paginatePRList<PRFileRaw>(
+      this.octokit,
+      api.pulls.listFiles,
+      { owner, repo, pull_number },
+    );
+    const commits = await paginatePRList<PRCommitRaw>(
+      this.octokit,
+      api.pulls.listCommits,
+      { owner, repo, pull_number },
+    );
+    const reviews = await paginatePRList<ReviewRaw>(
+      this.octokit,
+      api.pulls.listReviews,
+      { owner, repo, pull_number },
+    );
 
     return {
       pr: {
@@ -207,9 +224,9 @@ export class GitHubService implements IGitHubService {
         deletions: pr.deletions ?? 0,
         changed_files: pr.changed_files ?? 0,
       },
-      files: filesRes.data.map((f) => toPRFile(f)),
-      commits: commitsRes.data.map(toPRCommit),
-      existing_reviews: reviewsRes.data.map(toExistingReview),
+      files: files.map((f) => toPRFile(f)),
+      commits: commits.map(toPRCommit),
+      existing_reviews: reviews.map(toExistingReview),
       repository: {
         owner,
         repo,
@@ -220,24 +237,22 @@ export class GitHubService implements IGitHubService {
 
   async getPRFiles(pr_url: string, include_patch = true): Promise<PRFile[]> {
     const { owner, repo, pull_number } = this.parsePRURL(pr_url);
-    const res = await this.octokit.rest.pulls.listFiles({
-      owner,
-      repo,
-      pull_number,
-      per_page: LIST_PER_PAGE,
-    });
-    return res.data.map((f) => toPRFile(f, include_patch));
+    const files = await paginatePRList<PRFileRaw>(
+      this.octokit,
+      this.octokit.rest.pulls.listFiles,
+      { owner, repo, pull_number },
+    );
+    return files.map((f) => toPRFile(f, include_patch));
   }
 
   async getPRCommits(pr_url: string): Promise<PRCommit[]> {
     const { owner, repo, pull_number } = this.parsePRURL(pr_url);
-    const res = await this.octokit.rest.pulls.listCommits({
-      owner,
-      repo,
-      pull_number,
-      per_page: LIST_PER_PAGE,
-    });
-    return res.data.map(toPRCommit);
+    const commits = await paginatePRList<PRCommitRaw>(
+      this.octokit,
+      this.octokit.rest.pulls.listCommits,
+      { owner, repo, pull_number },
+    );
+    return commits.map(toPRCommit);
   }
 
   async getFileContent(
