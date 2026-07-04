@@ -35,9 +35,9 @@ Legend: ✅ done + green ✅   🟡 test red / stub ⏳   ⬜ not started
 - Gate: green ✅ verified 2026-07-04 via `cd refactor && pnpm typecheck && pnpm test` → 57 tests passed.
 
 ## Phase 5 — MCP server over HTTP/SSE
-- ✅ 5.1 Server + transport (`server.ts`) — modern MCP SDK Streamable HTTP, header-secret auth, rate limit, `/health`, per-request install Octokit. Verified: boots, `/health` 200, no-auth 401, ListTools returns 14 tools, unknown tool returns isError.
-- ⬜ 5.2 End-to-end integration test (get_review_strategy → get_pr_files → post_pr_review, mocked GitHub)
-- Gate: server boots, discovery returns catalog, 401 on bad secret. ✅
+- ✅ 5.1 Server + transport (`server.ts` + `app.ts`) — modern MCP SDK Streamable HTTP, header-secret auth, rate limit, `/health`, per-request install Octokit. Uses a per-request stateless Server + Transport so the SDK's stateless transport is never reused across POSTs. Verified: boots, `/health` 200, no-auth 401, ListTools returns 14 tools, unknown tool returns isError.
+- ✅ 5.2 End-to-end integration test — `integration.test.ts` boots the Express app with mocked services and verifies tool discovery, `get_review_strategy`, allowlist errors, unknown-tool errors, and auth rejection.
+- Gate: server boots, discovery returns catalog, sequential `tools/list` → `tools/call` returns 200 (regression for prior 500), 401 on bad secret. ✅ Verified 2026-07-04 via `cd refactor && npx tsc --noEmit && npx vitest run` → 62 tests passed.
 
 ## Phase 6 — Packaging & docs  ⬜
 - ⬜ 6.1 Deploy target (`refactor/Dockerfile`, `.env.example`, `.dockerignore`)

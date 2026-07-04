@@ -16,6 +16,8 @@ export {
 } from './registry.js';
 export type { ToolHandler, ToolEntry } from './registry.js';
 
+import { resetRegistry } from './registry.js';
+
 import { registerGetReviewStrategy } from './get_review_strategy.js';
 import { registerGetPRDetails } from './get_pr_details.js';
 import { registerGetPRFiles } from './get_pr_files.js';
@@ -35,6 +37,7 @@ import { registerDetectCodePatterns } from './detect_code_patterns.js';
  * Register every tool. Safe to call after `resetRegistry()`.
  */
 export function registerAllTools(): void {
+  resetRegistry();
   registerGetReviewStrategy();
   registerGetPRDetails();
   registerGetPRFiles();
