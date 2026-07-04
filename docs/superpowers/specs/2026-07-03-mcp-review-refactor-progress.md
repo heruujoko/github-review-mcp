@@ -34,10 +34,10 @@ Legend: ✅ done + green ✅   🟡 test red / stub ⏳   ⬜ not started
 - ✅ 4.2 Individual tools — implemented and green. `shared.ts` centralizes allowlist, GitHub service construction, and ToolResult envelopes. `tools/registry.ts` owns registry primitives; `tools/index.ts` aggregates and registers all tools. Implemented: `get_review_strategy`, `get_pr_details`, `get_pr_files`, `get_pr_commits`, `get_file_content`, `get_repo_info`, `get_pr_diff_range`, `post_pr_review`, `analyze_code_quality`, `analyze_diff_impact`, `analyze_dependencies`, `analyze_test_coverage`, `detect_security_issues`, `detect_code_patterns`. Data-only analysis heuristics live in `services/analysis.ts`.
 - Gate: green ✅ verified 2026-07-04 via `cd refactor && pnpm typecheck && pnpm test` → 57 tests passed.
 
-## Phase 5 — MCP server over HTTP/SSE  ⬜
-- ⬜ 5.1 Server + transport (`server.ts`) — modern MCP SDK Streamable HTTP, header-secret auth, rate limit, `/health`, per-request install Octokit
+## Phase 5 — MCP server over HTTP/SSE
+- ✅ 5.1 Server + transport (`server.ts`) — modern MCP SDK Streamable HTTP, header-secret auth, rate limit, `/health`, per-request install Octokit. Verified: boots, `/health` 200, no-auth 401, ListTools returns 14 tools, unknown tool returns isError.
 - ⬜ 5.2 End-to-end integration test (get_review_strategy → get_pr_files → post_pr_review, mocked GitHub)
-- Gate: server boots, discovery returns catalog, 401 on bad secret. ⬜
+- Gate: server boots, discovery returns catalog, 401 on bad secret. ✅
 
 ## Phase 6 — Packaging & docs  ⬜
 - ⬜ 6.1 Deploy target (`refactor/Dockerfile`, `.env.example`, `.dockerignore`)
