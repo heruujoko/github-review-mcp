@@ -561,11 +561,13 @@ export class AnalysisService {
     if (!file.patch) return result;
     const codeText = file.patch;
     for (const antiPattern of ANTI_PATTERNS) {
+      antiPattern.pattern.lastIndex = 0;
       if (antiPattern.pattern.test(codeText)) {
         result.anti_patterns.push({ name: antiPattern.name, file: file.filename, description: antiPattern.description });
       }
     }
     for (const goodPattern of GOOD_PATTERNS) {
+      goodPattern.pattern.lastIndex = 0;
       if (goodPattern.pattern.test(codeText)) {
         result.good_patterns.push({ name: goodPattern.name, file: file.filename, description: goodPattern.description });
       }
