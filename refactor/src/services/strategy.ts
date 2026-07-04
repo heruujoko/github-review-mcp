@@ -15,8 +15,20 @@ import type { IStrategyService, Strategy, ResolvedStrategies, RepoConfig } from 
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-/** Default catalog location: `refactor/strategies/`. */
-const DEFAULT_CATALOG_DIR = path.resolve(__dirname, '../../strategies');
+/**
+ * Default catalog location.
+ *
+ * In TS source execution, `__dirname` is `src/services` and `../../strategies`
+ * points at `refactor/strategies`. After `tsc`, `__dirname` is
+ * `dist/src/services`; the checked-in strategy files still live beside the
+ * package root, so fall back to `process.cwd()/strategies` for built/runtime
+ * deployments.
+ */
+function defaultCatalogDir(): string {
+  const sourceRelative = path.resolve(__dirname, '../../strategies');
+  if (fs.existsSync(sourceRelative)) return sourceRelative;
+  return path.resolve(process.cwd(), 'strategies');
+}
 
 export interface StrategyServiceOptions {
   /** Directory holding `*.md` strategy files. Defaults to `refactor/strategies`. */
@@ -32,7 +44,7 @@ export class StrategyService implements IStrategyService {
   private catalogCache: Map<string, Strategy> | undefined;
 
   constructor(opts: StrategyServiceOptions = {}) {
-    this.catalogDir = opts.catalogDir ?? DEFAULT_CATALOG_DIR;
+    this.catalogDir = opts.catalogDir ?? defaultCatalogDir();
     // Eager load so a broken catalog fails fast at boot.
     this.catalogCache = this.loadCatalog();
   }

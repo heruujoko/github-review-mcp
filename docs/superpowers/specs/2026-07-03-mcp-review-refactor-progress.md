@@ -39,9 +39,10 @@ Legend: ✅ done + green ✅   🟡 test red / stub ⏳   ⬜ not started
 - ✅ 5.2 End-to-end integration test — `integration.test.ts` boots the Express app with mocked services and verifies tool discovery, `get_review_strategy`, allowlist errors, unknown-tool errors, and auth rejection.
 - Gate: server boots, discovery returns catalog, sequential `tools/list` → `tools/call` returns 200 (regression for prior 500), 401 on bad secret. ✅ Verified 2026-07-04 via `cd refactor && npx tsc --noEmit && npx vitest run` → 62 tests passed.
 
-## Phase 6 — Packaging & docs  ⬜
-- ⬜ 6.1 Deploy target (`refactor/Dockerfile`, `.env.example`, `.dockerignore`)
-- ⬜ 6.2 README + repo-config sample (GitHub App setup, Fly secrets, n8n MCP Client wiring, sample `.github/review-config.yaml`)
+## Phase 6 — Packaging & docs
+- ✅ 6.1 Deploy target — added `refactor/Dockerfile`, `.env.example`, `.dockerignore`. Dockerfile performs multi-stage install/build and runs `node dist/src/server.js` with strategies available at runtime.
+- ✅ 6.2 README + repo-config sample — added `refactor/README.md` with GitHub App setup, env vars, Docker/Fly notes, n8n MCP Client wiring, and strategy config behavior. Added `refactor/examples/review-config.yaml`.
+- Gate: green ✅ verified 2026-07-04 via `cd refactor && pnpm typecheck && pnpm test && pnpm build`; `docker build -t github-review-mcp-refactor:test .`; container `/health` returned 200.
 
 ---
 

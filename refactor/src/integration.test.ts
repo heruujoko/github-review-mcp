@@ -146,7 +146,6 @@ describe('MCP server integration', () => {
       name: 'get_review_strategy',
       arguments: { owner: 'octo', repo: 'repo' },
     });
-    console.log('get_review_strategy status:', status, 'body:', body.substring(0, 500));
     expect(status).toBe(200);
     const result = parseSseResult(body) as any;
     expect(result).not.toBeNull();
@@ -188,7 +187,6 @@ describe('MCP server integration', () => {
       name: 'nonexistent_tool',
       arguments: {},
     });
-    console.log('unknown tool status:', status, 'body:', body.substring(0, 500));
     expect(status).toBe(200);
     const result = parseSseResult(body) as any;
     expect(result.isError).toBe(true);

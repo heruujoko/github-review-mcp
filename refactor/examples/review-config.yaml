@@ -1,0 +1,14 @@
+# Place this file in a target repository at:
+#   .github/review-config.yaml
+#
+# Strategy names must match files in this MCP server's strategies/ directory.
+# The MCP tool get_review_strategy resolves this file against the local catalog
+# and returns the matching prompt body to n8n.
+
+strategies:
+  - full-review
+  - security
+  - architecture
+
+# Optional fallback used when no specific strategy is requested.
+default: full-review
