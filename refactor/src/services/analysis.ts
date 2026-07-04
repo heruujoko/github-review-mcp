@@ -585,7 +585,8 @@ export class AnalysisService {
   }
 
   private isDependencyFile(filename: string): boolean {
-    return DEPENDENCY_PACKAGE_FILES.includes(filename) || DEPENDENCY_LOCK_FILES.includes(filename);
+    const basename = filename.split('/').pop() ?? filename;
+    return DEPENDENCY_PACKAGE_FILES.includes(basename) || DEPENDENCY_LOCK_FILES.includes(basename);
   }
 
   private generateDependencyRecommendations(dependencyFileCount: number): string[] {
